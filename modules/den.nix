@@ -3,14 +3,13 @@
 
   den.schema.user.classes = lib.mkDefault [ "homeManager" ]; # (2)
 
-  den.default.homeManager.home.stateVersion = "25.11"; # (3)
 
   den.hosts.x86_64-linux.framework.users.espdesign = {}; # (4) (5)
 
   den.aspects.framework = { # (6)
     includes = [ den.provides.hostname ]; # (7)
     nixos = { pkgs, ... }: {
-      imports = [ ./_nixos/configuration.nix ]; # (8)
+      imports = [ ./_nixos/hardware-configuration.nix ]; # (8)
       environment.systemPackages = with pkgs; [ firefox vscodium git gh opencode];
       nix.settings.experimental-features = ["nix-command" "flakes"];
     };
