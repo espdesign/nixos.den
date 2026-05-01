@@ -78,14 +78,14 @@
   # services.xserver.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.espdesign = {
-    isNormalUser = true;
-    description = "Evan Pendergraft";
-    extraGroups = [ "networkmanager" "wheel" ];
-    packages = with pkgs; [
-      firefox
-    ];
-  };
+  #users.users.espdesign = {
+  #  isNormalUser = true;
+  #  description = "Evan Pendergraft";
+  #  extraGroups = [ "networkmanager" "wheel" ];
+  #  packages = with pkgs; [
+  #    firefox
+  #  ];
+  #};
 
   # Install firefox.
   programs.firefox.enable = true;

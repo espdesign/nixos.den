@@ -1,8 +1,12 @@
 {
-  inputs.nixpkgs = "github:nixos/nixpkgs/nixpkgs-unstable";
-  inputs.darwin = "github:nix-darwin/nix-darwin";
-  inputs.import-tree.url = "github:vic/import-tree";
-  inputs.den.url = "github:vic/den";
+  description = "My nixos config suing den";
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    darwin.url = "github:nix-darwin/nix-darwin";
+    home-manager.url = "github:nix-community/home-manager";
+    import-tree.url = "github:vic/import-tree";
+    den.url = "github:vic/den";
+  };
 
   outputs = inputs:
    (inputs.nixpkgs.lib.evalModules {

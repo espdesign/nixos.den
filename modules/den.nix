@@ -11,7 +11,7 @@
     includes = [ den.provides.hostname ]; # (7)
     nixos = { pkgs, ... }: {
       imports = [ ./_nixos/configuration.nix ]; # (8)
-      environment.systemPackages = [ pkgs.hello ];
+      environment.systemPackages = with pkgs; [ firefox vscodium ];
       nix.settings.experimental-features = ["nix-command" "flakes"];
     };
   };
