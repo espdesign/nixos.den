@@ -9,16 +9,16 @@
   den.aspects.framework = { # (6)
     includes = [ den.provides.hostname ]; # (7)
     nixos = { pkgs, ... }: {
-      imports = [ ./_nixos/hardware-configuration.nix ]; # (8)
+      imports = [ ./_nixos/framework-hardware.nix ]; # (8)
       environment.systemPackages = with pkgs; [ firefox vscodium git gh opencode];
       nix.settings.experimental-features = ["nix-command" "flakes"];
     };
   };
 
-  den.aspects.espdesign = { # (9)
-    includes = [ den.provides.define-user den.provides.primary-user (den.provides.user-shell "fish")]; # (10)
-    homeManager = { pkgs, ... }: {
-      home.packages = [ pkgs.vim ];
-    };
-  };
+  # den.aspects.espdesign = { # (9)
+  #   includes = [ den.provides.define-user den.provides.primary-user (den.provides.user-shell "fish")]; # (10)
+  #   homeManager = { pkgs, ... }: {
+  #     home.packages = [ pkgs.vim ];
+  #   };
+  # };
 }
