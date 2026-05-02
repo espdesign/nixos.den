@@ -14,6 +14,7 @@
       { pkgs, ... }:
       {
         imports = [ ../_nixos/hinekora-framework.nix ]; # (8)
+
         environment.systemPackages = with pkgs; [
           firefox
           vscodium

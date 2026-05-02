@@ -10,6 +10,7 @@
       den.provides.define-user
       den.provides.primary-user
       (den.provides.user-shell "fish")
+      den.aspects.autologin-vm
     ];
     homeManager =
       { pkgs, ... }:
@@ -20,7 +21,7 @@
         ];
         programs.git = {
           enable = true;
-          signing.format = null; # To adopt the new default behavior, set:
+          signing.format = null;
           settings = {
             user = {
               name = "espdesign";

@@ -16,10 +16,7 @@
       # on hosts where GNOME is enabled.
       home-manager.sharedModules = [
         ({ config, ... }: {
-          # 1. Install the Wallpaper file
-          home.file.".local/share/backgrounds/wallpaper-molly.jpg".source = ../wallpaper-molly.jpg;
-
-          # 2. Configure GNOME Settings
+          # Configure GNOME Settings
           dconf = {
             enable = true;
             settings = {
@@ -40,10 +37,10 @@
                 color-scheme = "prefer-dark";
               };
 
-              # Set desktop background for dark and light mode
+              # Set desktop background for dark and light mode directly from the Nix store
               "org/gnome/desktop/background" = {
-                picture-uri = "file://${config.home.homeDirectory}/.local/share/backgrounds/wallpaper-molly.jpg";
-                picture-uri-dark = "file://${config.home.homeDirectory}/.local/share/backgrounds/wallpaper-molly.jpg";
+                picture-uri = "file://${../wallpaper-molly.jpg}";
+                picture-uri-dark = "file://${../wallpaper-molly.jpg}";
               };
             };
           };
