@@ -11,10 +11,10 @@
       ])
     ];
 
-    nixos =
+    homeManager =
       { pkgs, ... }:
       {
-        environment.systemPackages = with pkgs; [
+        home.packages = with pkgs; [
           # bottles
           dconf-editor
           easyeffects

@@ -8,6 +8,7 @@
   imports = [ inputs.den.flakeModule ];
 
   den.schema.user.classes = lib.mkDefault [ "homeManager" ]; # enable homeManager integration for all users by default.
+  den.ctx.user.includes = [ den._.mutual-provider ];
 
   den.hosts.x86_64-linux.hinekora = {
     users.espdesign = { };

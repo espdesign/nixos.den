@@ -1,10 +1,10 @@
 { den, ... }:
 {
   den.aspects.cli = {
-    nixos =
+    homeManager =
       { pkgs, ... }:
       {
-        environment.systemPackages = with pkgs; [
+        home.packages = with pkgs; [
           git
           gh
           opencode

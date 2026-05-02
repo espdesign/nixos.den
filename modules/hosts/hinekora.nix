@@ -9,9 +9,11 @@
   den.aspects.hinekora = {
     includes = [
       den.provides.hostname
+      # den.aspects.gnome
+    ];
+    provides.to-users.includes = [
       den.aspects.gui
       den.aspects.cli
-      # den.aspects.gnome
     ];
     nixos =
       { pkgs, ... }:

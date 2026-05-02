@@ -6,9 +6,11 @@
   ...
 }:
 {
-  den.aspects.kitava = { host, ... }: {
+  den.aspects.kitava = {
     includes = [
       den.provides.hostname
+    ];
+    provides.to-users.includes = [
       den.aspects.gaming
       den.aspects.gui
       den.aspects.cli

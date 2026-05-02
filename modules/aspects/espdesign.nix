@@ -11,15 +11,12 @@
       den.provides.primary-user
       (den.provides.user-shell "fish")
       den.aspects.autologin-vm
+      den.aspects.dev
       # den.aspects.gnome
     ];
     homeManager =
       { pkgs, ... }:
       {
-        home.packages = [
-          pkgs.vim
-          pkgs.nixfmt
-        ];
         programs.git = {
           enable = true;
           signing.format = null;
