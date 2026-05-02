@@ -19,7 +19,6 @@
           home.packages = with pkgs; [
             # bottles
             dconf-editor
-            firefox
             libreoffice
             mpv
             qbittorrent
@@ -56,21 +55,21 @@
               isDefault = true;
               name = user.userName;
               settings = {
-              # Performance & UI
-              "browser.startup.homepage" = "about:blank";
-              "browser.uidensity" = 1; # Compact Mode
-              "browser.tabs.inTitlebar" = 1;
+                # Performance & UI
+                "browser.startup.homepage" = "about:blank";
+                "browser.uidensity" = 1; # Compact Mode
+                "browser.tabs.inTitlebar" = 1;
 
-              # Privacy / Annoyances
-              "privacy.trackingprotection.enabled" = true;
-              "dom.security.https_only_mode" = true;
-              "browser.shell.checkDefaultBrowser" = false;
-              "browser.aboutConfig.showWarning" = false;
-              "extensions.pocket.enabled" = false; # Disable Pocket
-              "identity.fxaccounts.enabled" = false; # Disable Firefox Sync (optional)
+                # Privacy / Annoyances
+                "privacy.trackingprotection.enabled" = true;
+                "dom.security.https_only_mode" = true;
+                "browser.shell.checkDefaultBrowser" = false;
+                "browser.aboutConfig.showWarning" = false;
+                "extensions.pocket.enabled" = false; # Disable Pocket
+                "identity.fxaccounts.enabled" = false; # Disable Firefox Sync (optional)
+              };
             };
           };
         };
-      };
-  };
+    };
 }
