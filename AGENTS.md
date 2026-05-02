@@ -1,2 +1,0 @@
-# Troubleshooting
-Refer to ./docs/

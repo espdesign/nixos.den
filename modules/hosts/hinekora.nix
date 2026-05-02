@@ -17,9 +17,11 @@
         environment.systemPackages = with pkgs; [
           firefox
           vscodium
-          git
+          # git
           gh
           opencode
+          gemini-cli
+
         ];
         nix.settings.experimental-features = [
           "nix-command"

@@ -1,3 +1,4 @@
+{ den, ... }:
 {
   den.default = {
     homeManager.home.stateVersion = "25.11";
