@@ -48,9 +48,6 @@
           programs.firefox = {
             enable = true;
             configPath = ".config/mozilla/firefox";
-
-            # If you had custom policies/profiles in your old config,
-            # paste them here!
             profiles.default = {
               isDefault = true;
               name = user.userName;
