@@ -11,7 +11,7 @@
       den.provides.primary-user
       (den.provides.user-shell "fish")
       den.aspects.autologin-vm
-      den.aspects.dev
+      # den.aspects.dev
       # den.aspects.gnome
     ];
     homeManager =

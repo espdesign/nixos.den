@@ -49,6 +49,9 @@
         home.packages = with pkgs; [
           protonup-qt
           mangohud
+
+          #cross-platform runtime environment for Path of Building and Path of Building 2
+          rusty-path-of-building
         ];
       };
   };

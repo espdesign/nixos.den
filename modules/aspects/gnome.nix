@@ -24,6 +24,8 @@
         # Add GNOME specific system packages (like Tweaks)
         environment.systemPackages = with pkgs; [
           gnomeExtensions.appindicator
+          dconf-editor
+          gnome-shell-extensions
         ];
       };
 
