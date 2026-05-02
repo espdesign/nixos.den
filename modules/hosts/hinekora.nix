@@ -6,8 +6,10 @@
 }:
 {
   den.aspects.hinekora = {
-    # (6)
-    includes = [ den.provides.hostname ]; # (7)/home/espdesign/git/nixos.config/hosts/kitava-desktop/hardware.nix
+    includes = [
+      den.provides.hostname
+      den.aspects.gnome
+    ];
     nixos =
       { pkgs, ... }:
       {

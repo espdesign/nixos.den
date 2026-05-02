@@ -6,8 +6,10 @@
 }:
 {
   den.aspects.kitava = {
-    # (6)
-    includes = [ den.provides.hostname ];
+    includes = [
+      den.provides.hostname
+      den.aspects.gnome
+    ];
     nixos =
       { pkgs, ... }:
       {
