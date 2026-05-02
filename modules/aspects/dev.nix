@@ -63,6 +63,7 @@
               "editor.fontFamily" = "'JetBrains Mono', 'monospace', monospace";
               "editor.fontLigatures" = false;
               "editor.fontSize" = if host.hostName == "hinekora" then 16 else 14;
+              "terminal.integrated.fontFamily" = "'JetBrains Mono'";
 
               # Line Rulers (Good for maintaining code style/max line lengths)
               "editor.rulers" = [
