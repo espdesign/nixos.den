@@ -18,7 +18,7 @@ Two issues combined:
 { ... }:
 {
   den.aspects.gnome = {
-    nixos = { pkgs, ... }: {
+    nixos = {
       # Enable the GNOME Desktop Environment.
       services.displayManager.gdm.enable = true;
       services.desktopManager.gnome.enable = true;
@@ -33,7 +33,7 @@ Two issues combined:
 }
 ```
 
-**Key**: `nixos` must be a function `{ pkgs, ... }: { ... }`, not a plain attrset.
+**Note**: Both plain attrsets and function form `{ pkgs, ... }: { ... }` work for `nixos`.
 
 ### 2. Host Declaration (`den.nix`)
 
@@ -92,15 +92,13 @@ Two issues combined:
 
 2. **`includes` location**: The `includes` array for a host must be in the host's primary aspect (`den.aspects.<hostname>`), NOT in the `den.hosts.<system>.<name>` declaration.
 
-3. **Aspect function format**: When defining `nixos`, `darwin`, or `homeManager` in aspects, use function form `{ pkgs, ... }: { ... }` for better compatibility with den's aspect system.
+3. **`import-tree` loading**: All `.nix` files in the modules directory are loaded by `import-tree`. Test file loading by adding a syntax error - if build fails, the file is being loaded.
 
-4. **`import-tree` loading**: All `.nix` files in the modules directory are loaded by `import-tree`. Test file loading by adding a syntax error - if build fails, the file is being loaded.
-
-5. **Host declaration vs configuration**:
+4. **Host declaration vs configuration**:
    - `den.hosts` in `den.nix`: Declare hosts and users only
    - `den.aspects.<hostname>` in `hosts/<name>.nix`: Configure the host (includes, nixos config, etc.)
 
-6. **Verification command**: Use `nix eval .#nixosConfigurations.<hostname>.config.services.displayManager.gdm.enable` to verify if a service is enabled in the built config.
+5. **Verification command**: Use `nix eval .#nixosConfigurations.<hostname>.config.services.displayManager.gdm.enable` to verify if a service is enabled in the built config.
 
 ## Framework Laptop (hinekora) Specific Notes
 
