@@ -59,6 +59,3 @@ nix flake update
 1. Define the host in `modules/den.nix`.
 2. Create a machine aspect in `modules/hosts/<hostname>.nix`.
 3. Add hardware config to `modules/_nixos/`.
-
----
-*Built with ❤️ using the Den Framework.*
