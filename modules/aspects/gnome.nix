@@ -1,17 +1,31 @@
 { den, ... }:
 {
   den.aspects.gnome = {
-    nixos = {
-      # Enable the GNOME Desktop Environment.
-      services.displayManager.gdm.enable = true;
-      services.desktopManager.gnome.enable = true;
+    nixos =
+      { pkgs, ... }:
+      {
+        # Enable the GNOME Desktop Environment.
+        services.displayManager.gdm.enable = true;
+        services.desktopManager.gnome.enable = true;
 
-      # Configure keymap in X11
-      services.xserver.xkb = {
-        layout = "us";
-        variant = "";
+        # Configure keymap in X11
+        services.xserver.xkb = {
+          layout = "us";
+          variant = "";
+        };
+        # Exclude default GNOME bloat (Optional)
+        # If you don't want Tour, Music, Epiphany, etc.
+        environment.gnome.excludePackages = with pkgs; [
+          gnome-tour
+          gnome-music
+          epiphany
+        ];
+
+        # Add GNOME specific system packages (like Tweaks)
+        environment.systemPackages = with pkgs; [
+          gnomeExtensions.appindicator
+        ];
       };
-    };
 
     homeManager = {
       # Configure GNOME settings for Home Manager users.
@@ -26,7 +40,8 @@
               "org.gnome.Nautilus.desktop"
               "firefox.desktop"
               "com.mitchellh.ghostty.desktop"
-            ];          };
+            ];
+          };
 
           "org/gnome/desktop/interface" = {
             show-battery-percentage = true;
