@@ -6,6 +6,7 @@
       den.aspects.pipewire-sound
       den.aspects.vm
       den.aspects.cups-print
+      den.aspects.fonts
     ];
   };
 }

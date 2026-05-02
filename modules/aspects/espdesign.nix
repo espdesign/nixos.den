@@ -14,6 +14,12 @@
       # den.aspects.dev
       # den.aspects.gnome
     ];
+    nixos =
+      { ... }:
+      {
+        users.users.espdesign.hashedPassword = "$6$kk8o25Zeru3ZiUyL$zoRQ7si4zE2As8pL6D96w/VLktcIF7Zg1Ovn976JitlkQ68LiXKneJ/vMGGR7DAowq7sXqRGQVHRkq2rQ5MTU1";
+      };
+
     homeManager =
       { pkgs, ... }:
       {
@@ -24,8 +30,6 @@
             user = {
               name = "espdesign";
               email = "evanpendergraft@gmail.com";
-              initialHashedPassword = "$6$gMclef8wWibtLst0$6f0JIElUbX3DvW78zAOhLOesfigbHrMN0hzRgTDZaFjbG8uP6Nkzjm4an1AM0VriCyrLG8ECrHIJn.6OHbgdP0";
-
             };
 
             init = {

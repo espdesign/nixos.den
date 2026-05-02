@@ -42,7 +42,7 @@
               background-blur = true;
 
               # Optional: Explicitly set the font if you want
-              # font-family = "JetBrainsMono Nerd Font";
+              #               # font-family = "JetBrainsMono Nerd Font";
             };
           };
           programs.firefox = {

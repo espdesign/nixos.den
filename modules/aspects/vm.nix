@@ -17,12 +17,14 @@
     let
       pkgs = inputs.nixpkgs.legacyPackages.x86_64-linux;
       hosts = config.flake.nixosConfigurations;
-      mkVm = name: host: pkgs.writeShellApplication {
-        name = "vm-${name}";
-        text = ''
-          ${host.config.system.build.vm}/bin/run-${host.config.networking.hostName}-vm "$@"
-        '';
-      };
+      mkVm =
+        name: host:
+        pkgs.writeShellApplication {
+          name = "vm-${name}";
+          text = ''
+            ${host.config.system.build.vm}/bin/run-${host.config.networking.hostName}-vm "$@"
+          '';
+        };
     in
     (lib.mapAttrs' (name: host: lib.nameValuePair "vm-${name}" (mkVm name host)) hosts)
     // {
