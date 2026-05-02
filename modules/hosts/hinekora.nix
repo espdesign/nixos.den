@@ -8,7 +8,7 @@
   den.aspects.hinekora = {
     includes = [
       den.provides.hostname
-      den.aspects.gnome
+      # den.aspects.gnome
     ];
     nixos =
       { pkgs, ... }:

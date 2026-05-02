@@ -1,6 +1,12 @@
+# den.default is a special aspect that automatically applies its configuration to every 
+# host, user, and home in your Den setup, making it ideal for global settings.
+
 { den, ... }:
 {
   den.default = {
+    # Set desired DE aspect.
+    includes = [ den.aspects.gnome ];  
+
     homeManager.home.stateVersion = "25.11";
     nixos = {
       system.stateVersion = "24.11"; # Did you read the comment?
