@@ -23,10 +23,6 @@
       {
         imports = [ ../_nixos/kitava-desktop.nix ];
         environment.systemPackages = with pkgs; [ ];
-        nix.settings.experimental-features = [
-          "nix-command"
-          "flakes"
-        ];
       };
   };
 }

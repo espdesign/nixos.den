@@ -6,8 +6,7 @@
         "nvidia-x11"
         "nvidia-settings"
         "steam"
-        "steam-original"
-        "steam-run"
+        "steam-unwrapped"
       ])
     ];
 
