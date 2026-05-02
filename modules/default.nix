@@ -6,10 +6,6 @@
   den.default = {
     # Set desired DE aspect.
     includes = [
-      den.aspects.gnome
-      den.aspects.pipewire-sound
-      den.aspects.vm
-      den.aspects.cups-print
     ];
     homeManager.home.stateVersion = "25.11";
     nixos = {

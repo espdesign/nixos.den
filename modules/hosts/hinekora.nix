@@ -9,9 +9,10 @@
   den.aspects.hinekora = {
     includes = [
       den.provides.hostname
-      # den.aspects.gnome
+      den.aspects.standard-desktop
     ];
     provides.to-users.includes = [
+      den.aspects.standard-desktop
       den.aspects.gui
       den.aspects.dev
     ];

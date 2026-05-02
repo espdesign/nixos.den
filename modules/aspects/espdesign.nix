@@ -24,6 +24,8 @@
             user = {
               name = "espdesign";
               email = "evanpendergraft@gmail.com";
+              initialHashedPassword = "$6$gMclef8wWibtLst0$6f0JIElUbX3DvW78zAOhLOesfigbHrMN0hzRgTDZaFjbG8uP6Nkzjm4an1AM0VriCyrLG8ECrHIJn.6OHbgdP0";
+
             };
 
             init = {

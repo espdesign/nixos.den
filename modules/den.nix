@@ -16,4 +16,7 @@
   den.hosts.x86_64-linux.kitava = {
     users.espdesign = { };
   }; # desktop
+  den.hosts.x86_64-linux.test-cli = {
+    users.espdesign = { };
+  }; # cli test
 }
