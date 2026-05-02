@@ -31,16 +31,6 @@
             # --- Dev Servers ---
             package-version-server
             dockerfile-language-server
-            # --- Common Utils ---
-            jq
-            yq-go
-            fzf
-            ripgrep
-            fd
-            tree
-            wget
-            curl
-
           ];
           programs.vscode = {
             enable = true;
@@ -98,10 +88,6 @@
             gitCredentialHelper = {
               enable = true;
             };
-          };
-          programs.direnv = {
-            enable = true;
-            nix-direnv.enable = true;
           };
         };
     };

@@ -12,7 +12,6 @@
     ];
     provides.to-users.includes = [
       den.aspects.gui
-      den.aspects.cli
       den.aspects.dev
 
       den.aspects.gaming
