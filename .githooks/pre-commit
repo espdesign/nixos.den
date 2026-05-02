@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Pre-commit hook to format Nix files with nixfmt
+# Only processes staged .nix files
+
+# Check if nixfmt is available
+if ! command -v nixfmt &> /dev/null; then
+    echo "Error: nixfmt not found. Install it with: nix-shell -p nixfmt"
+    exit 1
+fi
+
+# Get list of staged .nix files
+staged_nix_files=$(git diff --cached --name-only --diff-filter=ACM | grep '\.nix$' || true)
+
+if [ -z "$staged_nix_files" ]; then
+    exit 0
+fi
+
+# Format each staged file
+echo "Running nixfmt on staged files..."
+while IFS= read -r file; do
+    if [ -f "$file" ]; then
+        echo "  Formatting: $file"
+        nixfmt "$file"
+        git add "$file"
+    fi
+done <<< "$staged_nix_files"
+
+echo "nixfmt formatting complete."
