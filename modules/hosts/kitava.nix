@@ -1,3 +1,4 @@
+# kitava is my desktop with nvidia 3070ti
 {
   inputs,
   den,
@@ -8,7 +9,7 @@
   den.aspects.kitava = { host, ... }: {
     includes = [
       den.provides.hostname
-      den.aspects.gnome
+      den.aspects.gaming
     ];
     nixos =
       { pkgs, ... }:

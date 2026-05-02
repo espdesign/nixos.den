@@ -1,3 +1,4 @@
+# hinekora is a framework 12th gen intel
 {
   inputs,
   den,
