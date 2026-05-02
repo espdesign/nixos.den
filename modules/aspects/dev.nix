@@ -49,7 +49,13 @@
             vscodium
 
           ];
-
+          #enable gh with credential helper
+          programs.gh = {
+            enable = true;
+            gitCredentialHelper = {
+              enable = true;
+            };
+          };
           programs.direnv = {
             enable = true;
             nix-direnv.enable = true;
