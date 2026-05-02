@@ -10,6 +10,7 @@
       den.provides.define-user
       den.provides.primary-user
       (den.provides.user-shell "fish")
+      den.aspects.gnome
     ];
     homeManager =
       { pkgs, ... }:

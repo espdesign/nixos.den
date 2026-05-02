@@ -12,7 +12,7 @@
         variant = "";
       };
     };
-    homeManager = { config, pkgs, ...}:{
+    homeManager = { config, pkgs, ... }:{
 
       # 1. Install the Wallpaper file
       home.file.".local/share/backgrounds/wallpaper-molly.jpg".source = ../wallpaper-molly.jpg;
