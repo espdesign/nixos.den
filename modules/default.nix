@@ -5,7 +5,10 @@
 {
   den.default = {
     # Set desired DE aspect.
-    includes = [ den.aspects.gnome ];  
+    includes = [ 
+      den.aspects.gnome
+      den.aspects.vm
+    ];  
 
     homeManager.home.stateVersion = "25.11";
     nixos = {
