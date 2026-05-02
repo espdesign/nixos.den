@@ -6,6 +6,7 @@
     home-manager.url = "github:nix-community/home-manager";
     import-tree.url = "github:vic/import-tree";
     den.url = "github:vic/den";
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
   };
 
   outputs =

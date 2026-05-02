@@ -13,7 +13,10 @@
     nixos =
       { pkgs, ... }:
       {
-        imports = [ ../_nixos/hinekora-framework.nix ]; # (8)
+        imports = [
+          ../_nixos/hinekora-framework.nix
+          inputs.nixos-hardware.nixosModules.framework-12th-gen-intel
+        ]; # (8)
 
         environment.systemPackages = with pkgs; [
           firefox
