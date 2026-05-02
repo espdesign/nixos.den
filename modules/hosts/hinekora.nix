@@ -9,6 +9,8 @@
   den.aspects.hinekora = {
     includes = [
       den.provides.hostname
+      den.aspects.gui
+      den.aspects.cli
       # den.aspects.gnome
     ];
     nixos =
@@ -19,15 +21,7 @@
           inputs.nixos-hardware.nixosModules.framework-12th-gen-intel
         ]; # (8)
 
-        environment.systemPackages = with pkgs; [
-          firefox
-          vscodium
-          git
-          gh
-          opencode
-          gemini-cli
-          nil
-        ];
+        environment.systemPackages = with pkgs; [ ];
         nix.settings.experimental-features = [
           "nix-command"
           "flakes"
