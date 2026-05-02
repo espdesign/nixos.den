@@ -10,6 +10,7 @@
           opencode
           gemini-cli
           nil
+          vim
         ];
       };
   };

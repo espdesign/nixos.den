@@ -46,7 +46,6 @@
             wget
             curl
             # --- Text Editor ---
-            vim
             vscodium
 
           ];

@@ -11,9 +11,12 @@
       den.provides.hostname
     ];
     provides.to-users.includes = [
-      den.aspects.gaming
       den.aspects.gui
       den.aspects.cli
+      den.aspects.dev
+
+      den.aspects.gaming
+
     ];
     nixos =
       { pkgs, ... }:
