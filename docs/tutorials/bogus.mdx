@@ -1,0 +1,143 @@
+---
+title: "Template: Bug Reproduction"
+description: Create minimal reproductions for Den bug reports using nix-unit.
+---
+
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside title="Source" icon="github">
+[`templates/bogus`](https://github.com/vic/den/tree/main/templates/bogus)
+</Aside>
+
+This template helps you create minimal Den reproductions.
+
+Use it for:
+
+- Showcasing focused demos of how you are trying to use Den.
+- Reducing a problem to its minimum outside of your infra.
+- Sharing code that exposes an unknown bug.
+- Contributing bug fixes to Den core.
+
+All PRs modifying this template are run by Den CI on the following
+Den versions: `PR_HEAD`, `main`, `latest`.
+
+Feel free to send any PR even if you don't know if it is an
+actual bug or if you don't know the solution.
+
+Just having an small, focused example can help Den maintainers a lot.
+We can together determine if there's something we need to fix in Den.
+
+If you wish to contribute a fix, you are more than welcome,
+just mention you'd like to work on this at the PR.
+
+<Aside title="AI Policy">
+We accept AI assisted contributions as long as they are clear and focused and don't introduce unrelated accidental complexity.
+
+**All PR changes must be the absolute minimum required for showing/fixing bugs**
+</Aside>
+
+## Initialize
+
+```console
+mkdir bogus && cd bogus
+nix flake init -t github:vic/den#bogus
+nix flake update den
+```
+
+## Project Structure
+
+```
+flake.nix
+modules/
+  bug.nix           # your bug reproduction
+  test-base.nix     # test infrastructure (DO NOT EDIT)
+```
+
+## Writing a Bug Reproduction
+
+Edit `modules/bug.nix` with a minimal test case:
+
+```nix
+{ denTest, ... }:
+{
+  flake.tests.bogus = {
+    test-something = denTest (
+      { den, lib, igloo, tuxHm, ... }:
+      {
+        den.hosts.x86_64-linux.igloo.users.tux = { };
+
+        # set up the scenario
+        den.aspects.igloo.nixos.environment.sessionVariables.FOO = ["foo" "bar"];
+
+        # what you get
+        expr = igloo.environment.sessionVariables.FOO;
+        # what you expect
+        expected = "foo:bar";
+      }
+    );
+  };
+}
+```
+
+### How denTest Works
+
+`denTest` is a helper that:
+1. Creates a fresh Den evaluation with your module
+2. Provides helpers like `igloo` (host config), `tuxHm` (user's HM config)
+3. Compares `expr` against `expected` using [nix-unit](https://github.com/nix-community/nix-unit)
+
+Available test helpers (from `test-base.nix`):
+
+| Helper | Description |
+|--------|-------------|
+| `igloo` | `nixosConfigurations.igloo.config` |
+| `iceberg` | `nixosConfigurations.iceberg.config` |
+| `tuxHm` | `igloo.home-manager.users.tux` |
+| `pinguHm` | `igloo.home-manager.users.pingu` |
+| `funnyNames` | Resolves an aspect for class `"funny"` and collects `.names` |
+| `trace` | traces included aspect names |
+
+If you want to see some examples, take a look at other bogus reports that are now part of Den repository at:
+
+```console
+ls den/templates/ci/modules/features/deadbugs/*.nix
+```
+
+## Run Tests
+
+```console
+# From the bogus root
+nix flake check
+```
+
+
+```console
+# From the Den root
+just bogus
+```
+
+## Contributing a Fix
+
+Edit Den `/nix` or `/modules` code and run:
+
+```console
+just bogus
+```
+
+When your changes to Den have fixed the bug, be sure to 
+move `bug.nix` into the `templates/ci/modules/feautres/deadbugs/` directory, following naming conventions for both the file and test-suite name.
+
+## What It Provides
+
+| Feature | Provided |
+|---------|:--------:|
+| nix-unit test infrastructure | ✓ |
+| Pre-configured denTest helper | ✓ |
+| Version matrix testing | ✓ |
+| Common test helpers | ✓ |
+
+## Next Steps
+
+- Read [Debug Configurations](/guides/debug/) for debugging techniques
+- See the [CI Tests template](/tutorials/ci/) for Den's own comprehensive test suite

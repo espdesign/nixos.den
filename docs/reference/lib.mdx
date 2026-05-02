@@ -1,0 +1,176 @@
+---
+title: den.lib
+description: Library functions for parametric dispatch, argument introspection, and aspect manipulation.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside title="Source" icon="github">
+[`nix/lib.nix`](https://github.com/vic/den/blob/main/nix/lib.nix) --
+[`nix/fn-can-take.nix`](https://github.com/vic/den/blob/main/nix/fn-can-take.nix)
+</Aside>
+
+## `den.lib.parametric`
+
+Wraps an aspect with a `__functor` that filters `includes` by argument compatibility.
+
+```nix
+den.lib.parametric { nixos.x = 1; includes = [ ... ]; }
+```
+
+Default uses `atLeast` matching.
+
+### `den.lib.parametric.atLeast`
+
+Same as `parametric`. Functions match if all required params are present.
+
+### `den.lib.parametric.exactly`
+
+Functions match only if required params exactly equal provided params.
+
+```nix
+den.lib.parametric.exactly { includes = [ ({ host }: ...) ]; }
+```
+
+### `den.lib.parametric.fixedTo`
+
+Calls the aspect with a fixed context, ignoring the actual context:
+
+```nix
+den.lib.parametric.fixedTo { host = myHost; } someAspect
+```
+
+### `den.lib.parametric.expands`
+
+Extends the received context with additional attributes before dispatch:
+
+```nix
+den.lib.parametric.expands { extra = true; } someAspect
+```
+
+### `den.lib.parametric.withOwn`
+
+Low-level constructor. Takes a `functor: self -> ctx -> aspect` and wraps
+an aspect so that owned configs and statics are included at the static
+stage, and the functor runs at the parametric stage.
+
+## `den.lib.canTake`
+
+Function argument introspection.
+
+### `den.lib.canTake params fn`
+
+Returns `true` if `fn`'s required arguments are satisfied by `params` (atLeast).
+
+### `den.lib.canTake.atLeast params fn`
+
+Same as `canTake`.
+
+### `den.lib.canTake.exactly params fn`
+
+Returns `true` only if `fn`'s required arguments exactly match `params`.
+
+## `den.lib.take`
+
+Conditional function application.
+
+### `den.lib.take.atLeast fn ctx`
+
+Calls `fn ctx` if `canTake.atLeast ctx fn`, otherwise returns `{}`.
+
+### `den.lib.take.exactly fn ctx`
+
+Calls `fn ctx` if `canTake.exactly ctx fn`, otherwise returns `{}`.
+
+### `den.lib.take.unused`
+
+`_unused: used: used` -- ignores first argument, returns second. Used for
+discarding `aspect-chain` in `import-tree`.
+
+## Context Shortcuts
+
+These helpers are shortcuts built with `den.lib.take.exactly` and
+`den.lib.parametric.fixedTo`:
+
+### `den.lib.perHost aspect`
+
+Run `aspect` only in `{ host }` contexts.
+
+### `den.lib.perUser aspect`
+
+Run `aspect` only in `{ host, user }` contexts.
+
+### `den.lib.perHome aspect`
+
+Run `aspect` only in `{ home }` contexts.
+
+## `den.lib.statics`
+
+Extracts only static includes from an aspect (non-function includes):
+
+```nix
+den.lib.statics someAspect { class = "nixos"; aspect-chain = []; }
+```
+
+## `den.lib.owned`
+
+Extracts owned configs from an aspect (removes `includes`, `__functor`):
+
+```nix
+den.lib.owned someAspect
+```
+
+## `den.lib.isFn`
+
+Returns `true` if the value is a function or has `__functor`:
+
+```nix
+den.lib.isFn myValue
+```
+
+## `den.lib.isStatic`
+
+Returns `true` if the function can take `{ class, aspect-chain }`:
+
+```nix
+den.lib.isStatic myFn
+```
+
+## `den.lib.__findFile`
+
+The angle bracket resolver. See [Angle Brackets Syntax](/guides/angle-brackets/).
+
+```nix
+_module.args.__findFile = den.lib.__findFile;
+```
+
+## `den.lib.aspects`
+
+Den aspects API. Provides aspect type definitions, `resolve`,
+`resolve.withAdapter`, and composable `adapters`.
+
+### `den.lib.aspects.resolve class aspect`
+
+Resolves an aspect for a given class (e.g., `"nixos"`), returning a
+module with `imports`. Uses `adapters.default` which honors
+`meta.adapter` on aspects.
+
+### `den.lib.aspects.resolve.withAdapter adapter class aspect`
+
+Resolves with a custom adapter instead of the default.
+
+### `den.lib.aspects.adapters`
+
+Composable adapters for `resolve.withAdapter`. Each adapter receives
+`{ aspect, class, classModule, recurse, aspect-chain, resolveChild }`
+and returns the resolved result.
+
+| Adapter | Description |
+|---------|-------------|
+| `module` | Collects class modules and recurses on includes |
+| `default` | `filterIncludes module` — the default pipeline |
+| `filter pred adapter` | Returns `{}` if `pred aspect` is false |
+| `map f adapter` | Transforms the adapter's result with `f` |
+| `mapAspect f adapter` | Transforms the aspect before passing to adapter |
+| `mapIncludes f adapter` | Transforms each include before recursion |
+| `filterIncludes adapter` | Honors `meta.adapter`, filters empty includes, tags survivors for propagation |

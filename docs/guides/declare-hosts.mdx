@@ -1,0 +1,151 @@
+---
+title: Declare Hosts & Users
+description: Define machines, users, and standalone homes with den.hosts and den.homes.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+ 
+<Aside title="Source" icon="github">
+[`types`](https://github.com/vic/den/blob/main/nix/types.nix) -
+[`schema`](https://github.com/vic/den/blob/main/modules/options.nix) -
+[`examples/microvm`](https://github.com/vic/den/blob/main/templates/microvm/modules/microvm-integration.nix)
+</Aside>
+ 
+
+
+## Host Declaration
+
+`den.hosts` is keyed by `<system>.<name>`:
+
+```nix
+{
+  den.hosts.x86_64-linux.laptop.users.alice = { };
+
+  den.hosts.aarch64-darwin.mac = {
+    users.alice = { };
+    brew.apps = [ "iterm2" ];
+  };
+}
+```
+
+Each host entry produces a configuration in `flake.nixosConfigurations` or
+`flake.darwinConfigurations` depending on its `class` (auto-detected from the host platform).
+
+## Host Schema
+
+<Aside title="Important" icon="nix">
+Be sure to read about the entity [Schemas](/reference/schema/), each of `host`/`user`/`home` has a corresponding `den.schema.*` module for meta-configuration of entity features. Which can later be used in aspects that read from `host`. These schemas are the meta-data equivalent of what Dendritic flake-parts users do with flake-level options.
+</Aside>
+
+Hosts have these options (all with sensible defaults):
+
+| Option | Default | Description |
+|---|---|---|
+| `name` | attrset key | Configuration name |
+| `hostName` | `name` | Network hostname |
+| `system` | parent key | `x86_64-linux`, `aarch64-darwin`, etc. |
+| `class` | `"nixos"` or `"darwin"` | OS class, auto-detected from system |
+| `aspect` | `name` | Primary aspect name |
+| `instantiate` | class-dependent | `lib.nixosSystem`, `darwinSystem`, etc. |
+| `intoAttr` | class-dependent | Flake output path |
+| `users` | `{}` | User account definitions |
+| `*` | from `den.schema.host` | Any option defined by base module |
+| `*` |  | Any other free-form attribute |
+
+## User Declaration
+
+Users are declared as part of a host:
+
+```nix
+den.hosts.x86_64-linux.laptop = {
+  users.alice = { };
+  users.bob.classes = [ "homeManager" "hjem" ];
+};
+```
+
+Each user has:
+
+| Option | Default | Description |
+|---|---|---|
+| `name` | attrset key | User configuration name |
+| `userName` | `name` | System account name |
+| `aspect` | `name` | Primary aspect name |
+| `classes` | `[ "homeManager" ]` | Nix classes this user participates in |
+| `*` | from `den.schema.user` | Any option defined by base module |
+| `*` |  | Any other free-form attribute |
+
+## Standalone Homes
+
+For systems without root access or for home-manager-only setups:
+
+```nix
+{
+  den.homes.x86_64-linux.alice = { };
+  den.homes.aarch64-darwin.alice = { };
+}
+```
+
+Standalone homes produce `flake.homeConfigurations.<name>`.
+
+Home schema:
+
+| Option | Default | Description |
+|---|---|---|
+| `name` | attrset key | Home configuration name |
+| `userName` | `name` | User account name |
+| `system` | parent key | Platform system |
+| `class` | `"homeManager"` | Home class |
+| `aspect` | `name` | Primary aspect name |
+| `pkgs` | `inputs.nixpkgs.legacyPackages.${system}` | nixpkgs instance |
+| `instantiate` | `inputs.home-manager.lib.homeManagerConfiguration` | Builder function |
+| `*` | from `den.schema.host` | Any option defined by base module |
+| `*` |  | Any other free-form attribute |
+
+## Base Modules
+
+`den.schema.{host,user,home}` provides shared configuration applied to all entities of each kind.
+
+Some batteries also extend base modules [see `home-env.nix`](https://github.com/vic/den/blob/main/nix/home-env.nix)
+that is used by home-manager/hjem/maid to extend the Host schema with options like `hjem.module`/`home-manager.module`.
+
+Another more advanced examples is our [templates/microvm](https://github.com/vic/den/tree/main/templates/microvm/modules/microvm-integration.nix)
+that adds options related to running virtualized OS.
+
+```nix
+{
+  # Can be used to specify features of all host
+  den.schema.host.home-manager.enable = true;
+
+  # Can be used to add schema options with defaults
+  den.schema.user = { user, lib, ... }: {
+    options.groupName = lib.mkOption { default = user.userName; };
+  };
+
+  # Applied to every host and user and home.
+  den.schema.conf = {
+    options.copyright = lib.mkOption { default = "Copy-Left"; };
+  };
+}
+```
+
+## Freeform Schema
+
+Host and user types use `freeformType`, so you can add arbitrary attributes:
+
+```nix
+den.hosts.x86_64-linux.laptop = {
+  users.alice = { };
+  gpu = "nvidia";  # custom attribute, accessible in aspects via host.gpu
+};
+```
+
+Access custom attributes in aspects:
+
+```nix
+den.aspects.laptop.includes = [
+  ({ host, ... }: lib.optionalAttrs (host ? gpu) {
+    nixos.hardware.nvidia.enable = true;
+  })
+];
+```

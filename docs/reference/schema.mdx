@@ -1,0 +1,184 @@
+---
+title: Schema
+description: Host, user, and home declaration options, base modules, and freeform types.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside title="Source" icon="github">
+[`modules/options.nix`](https://github.com/vic/den/blob/main/modules/options.nix) --
+[`modules/_types.nix`](https://github.com/vic/den/blob/main/modules/_types.nix)
+</Aside>
+
+## Schema Base Modules
+
+Each of `host`, `user`, `home` configuration objects have freeform-types,
+meaning you can assign any attribute into them as meta-data.
+
+However, at times you might want to have shared meta-data between all hosts
+or all users.
+
+The base modules, `den.schema.*` serve for this purpose. 
+They are **not aspects**, they are meta-data (the attributes of host) that aspects
+can later read for providing configuration.
+
+For example, instead of:
+
+```nix
+den.hosts.x86_64-linux.igloo = {
+  hardened = true; # custom free-form metadata
+
+  # repetitive
+  users.alice.classes = [ "homeManager" ];
+  users.bob.classes = [ "homeManager" ];
+};
+```
+
+You can do:
+
+```nix
+# This is not an aspect, it is a meta-configuration of the host capabilities.
+den.schema.host = { host, lib, ... }: {
+   options.hardened = lib.mkEnableOption "Is it secure";
+   config.hardened = lib.mkDefault true;
+};
+
+# The meta-configuration module for all users
+den.schema.user = { user, lib, ... }: {
+   config.classes = lib.mkDefault [ "homeManager" ];
+};
+```
+
+All hosts you create will be `hardened = true` by default. And aspects will
+be able to read `host.hardened` value.
+
+## `den.schema`
+
+Base modules merged into all hosts, users, or homes.
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `den.schema.conf` | `deferredModule` | Applied to host, user, and home |
+| `den.schema.host` | `deferredModule` | Applied to all hosts (imports `conf`) |
+| `den.schema.user` | `deferredModule` | Applied to all users (imports `conf`) |
+| `den.schema.home` | `deferredModule` | Applied to all homes (imports `conf`) |
+
+```nix
+den.schema.conf = { lib, ... }: {
+  # shared across all host/user/home declarations
+};
+den.schema.host = { ... }: {
+  # host-specific base config
+};
+```
+
+
+## `den.hosts`
+
+Type: `attrsOf systemType`
+
+Keyed by system string (e.g., `"x86_64-linux"`). Each system contains
+host definitions as freeform attribute sets.
+
+```nix
+den.hosts.x86_64-linux.myhost = {
+  users.vic = {};
+};
+```
+
+### Host options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `name` | `str` | attr name | Configuration name |
+| `hostName` | `str` | `name` | Network hostname |
+| `system` | `str` | parent key | Platform (e.g., `x86_64-linux`) |
+| `class` | `str` | auto | `"nixos"` or `"darwin"` based on system |
+| `aspect` | `str` | `name` | Main aspect name for this host |
+| `description` | `str` | auto | `class.hostName@system` |
+| `resolved` | `raw` | auto | Resolved aspect from context pipeline (see below) |
+| `users` | `attrsOf userType` | `{}` | User accounts on this host |
+| `instantiate` | `raw` | auto | OS builder function |
+| `intoAttr` | `listOf str` | auto | Flake output path |
+| `*` | `den.schema.host` options | | Options from base module |
+| `*` |  | | free-form attributes |
+
+### `instantiate` defaults
+
+| Class | Default |
+|-------|---------|
+| `nixos` | `inputs.nixpkgs.lib.nixosSystem` |
+| `darwin` | `inputs.darwin.lib.darwinSystem` |
+| `systemManager` | `inputs.system-manager.lib.makeSystemConfig` |
+
+### `intoAttr` defaults
+
+| Class | Default |
+|-------|---------|
+| `nixos` | `[ "nixosConfigurations" name ]` |
+| `darwin` | `[ "darwinConfigurations" name ]` |
+| `systemManager` | `[ "systemConfigs" name ]` |
+
+## `den.hosts.<sys>.<host>.users`
+
+Type: `attrsOf userType`
+
+### User options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `name` | `str` | attr name | User configuration name |
+| `userName` | `str` | `name` | System account name |
+| `classes` | `listOf str` | `[ "homeManager" ]` | Home management classes |
+| `aspect` | `str` | `name` | Main aspect name |
+| `resolved` | `raw` | auto | Resolved aspect from context pipeline (see below) |
+| `*` | `den.schema.user` options | | Options from base module |
+| `*` |  | | free-form attributes |
+
+Freeform: additional attributes pass through to the user module.
+
+## `den.homes`
+
+Type: `attrsOf homeSystemType`
+
+Standalone home-manager configurations, keyed by system string.
+
+```nix
+den.homes.x86_64-linux.vic = {};
+```
+
+### Home options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `name` | `str` | attr name | Home configuration name |
+| `userName` | `str` | `name` | User account name |
+| `system` | `str` | parent key | Platform system |
+| `class` | `str` | `"homeManager"` | Home management class |
+| `aspect` | `str` | `name` | Main aspect name |
+| `description` | `str` | auto | `home.userName@system` |
+| `pkgs` | `raw` | `inputs.nixpkgs.legacyPackages.$sys` | Nixpkgs instance |
+| `instantiate` | `raw` | `inputs.home-manager.lib.homeManagerConfiguration` | Builder |
+| `resolved` | `raw` | auto | Resolved aspect from context pipeline (see below) |
+| `intoAttr` | `listOf str` | `[ "homeConfigurations" name ]` | Output path |
+| `*` | `den.schema.home` options | | Options from base module |
+| `*` |  | | free-form attributes |
+
+## Entity `resolved`
+
+Every entity (host, user, home) has a `resolved` attribute — the aspect
+produced by running the entity through its context pipeline
+(`den.ctx.${kind}`). This is auto-derived and used internally by
+`mainModule` to produce the entity's final configuration.
+
+To control which aspects are included during resolution, set
+`meta.adapter` on a context node:
+
+```nix
+den.ctx.host.meta.adapter = inherited:
+  den.lib.aspects.adapters.filter (a: a.name != "unwanted") inherited;
+```
+
+This filters transitively — nested aspects reached through includes
+are also subject to the adapter.
+

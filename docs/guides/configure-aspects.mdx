@@ -1,0 +1,317 @@
+---
+title: Configure Aspects
+description: Owned configs, includes, provides, and den.default.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside title="Source" icon="github">
+[`lib/aspects`](https://github.com/vic/den/tree/main/lib/aspects) ·
+[`aspects definition`](https://github.com/vic/den/tree/main/modules/aspects/definition.nix) ·
+[`example aspects`](https://github.com/vic/den/tree/main/modules/aspects/provides) ·
+</Aside>
+
+# Den created aspects.
+
+<Aside icon="nix" title="Nix Classes">
+
+A Dendritic aspect is an attrset that contains modules of different Nix `class`.
+
+```nix
+gaming = { nixos = ...; homeManager = ...; hjem = ...; darwin = ...; }
+```
+
+Such an attrset is said to be [**Dendritic**](https://dendrix.oeiuwq.com/Dendritic.html) because it allows configuring a single cross-cutting concern (`gaming`) over different configuration domains.
+
+Nix classes are NOT an artificial concept created by Den. There are [many nix classes in the wild](https://github.com/search?q=language%3ANix+%28%22+class+%3D+%22+AND+%22evalModules%22%29&type=code), the most common are [`nixos`](https://github.com/search?q=repo%3ANixOS%2Fnixpkgs+%22class+%3D+%5C%22nixos%5C%22%22&type=code), [`darwin`](https://github.com/nix-darwin/nix-darwin/blob/da529ac9e46f25ed5616fd634079a5f3c579135f/eval-config.nix#L81), [`homeManager`](https://github.com/nix-community/home-manager/blob/5be5d8245cbc7bc0c09fbb5f38f23f223c543f85/nixos/common.nix#L27).
+</Aside>
+
+Den **automatically** creates an aspect for each of your host/user/home defintions. For example, with the following definitions:
+
+```nix "homeManager" "hjem" "maid" "x86_64-linux"
+den.hosts.x86_64-linux.igloo.users = {
+  tux = {
+    classes = [ "homeManager" "hjem" ];
+  };
+  pingu = {
+    classes = [ "maid" ];
+  };
+};
+```
+
+Den will create the following **parametric** aspects for you:
+
+```nix "nixos" "homeManager" "hjem" "maid"
+ den.aspects.igloo = parametric {
+   nixos = {}; # `host.class` was derived from the host platform
+ };
+
+ den.aspects.tux = parametric {
+   homeManager = {};
+   hjem = {};
+ };
+
+ den.aspects.pingu = parametric {
+  maid = {};
+ };
+```
+
+## Aspect Basics
+
+In addition to per-class modules, an aspect has an `includes` list referencing other aspects, and `provides` for sub-aspects in same category:
+
+```nix
+{ den, ... }: {
+  den.aspects.laptop = {
+    # Owned configs per class
+    nixos = { pkgs, ... }: {
+      environment.systemPackages = [ pkgs.git ];
+    };
+    darwin.nix-homebrew.enable = true;
+    homeManager.programs.starship.enable = true;
+
+    # Dependencies
+    includes = [
+      den.provides.primary-user
+      den.aspects.gaming.provides.emulation
+    ];
+  };
+
+  den.aspects.gaming = {
+    darwin = ...;
+    nixos = ...;
+    provides.emulation = {
+      darwin = ...;
+      nixos = ...;
+    };
+  }
+}
+```
+
+## Owned Configs
+
+Attributes named after a Nix class (`nixos`, `darwin`, `homeManager`, or any
+custom class) are referred by this documentation as **owned configs**.
+
+They are just a regular Nix module:
+
+- **Attrset Module**: plain and simple configuration.
+- **Function Module**: taking module arguments (`{ config, pkgs, lib, ... }: { }`).
+
+```nix
+# Attrset form
+den.aspects.laptop.nixos.networking.hostName = "laptop";
+
+# Function form
+den.aspects.laptop.nixos = { pkgs, ... }: {
+  environment.systemPackages = [ pkgs.git ];
+};
+```
+
+## Includes
+
+`includes` is a list of aspects used to declare dependencies between aspects.
+
+Unlike other Nix libraries that use stringly-typed "tags" to define requirements,
+Den uses real aspect references, these can be type-checked by the Nix module system.
+
+```nix
+den.aspects.workstation.includes = [
+  # Reference another aspect (its full DAG is included)
+  den.aspects.dev-tools
+];
+```
+
+It is important to note the three kinds of values that Den distinguishes
+as part of an includes list:
+
+1. Static (plain attribute set): `{ nixos.foo = ...; }`
+2. Static (aspects leaf): `{class, aspect-chain}: { ${class}.foo = ...; }`
+3. Parametric (any other function): `{ host, user }: { ${host.class}.foo = ...; }`
+
+`(1)` and `(2)` are termed *static aspects* and are the terminal leafs of aspects DAG.
+`(1)` provides configuration unconditionally, and `(2)` gets access to the `class` that is
+being resolved and an `aspect-chain` that lead to the current aspect (most recent last).
+
+
+`(3)` is a more interesting kind of aspect that is used by Den to pass host/user defitions
+into these functions, so they can inspect the host features and provide
+configuration accordingly.
+
+
+## Provides
+
+`provides` creates named sub-aspects accessible via `den.aspects.<name>._.<sub>`
+or `den.aspects.<name>.provides.<sub>`:
+
+```nix
+den.aspects.tools.provides.editors = {
+  homeManager.programs.helix.enable = true;
+  homeManager.programs.vim.enable = true;
+};
+
+# Used elsewhere:
+den.aspects.alice.includes = [ den.aspects.tools._.editors ];
+```
+
+`provides` can also be parametric functions:
+
+```nix
+den.aspects.alice.provides.work-vpn = { host, user, ... }:
+  lib.optionalAttrs host.hasVpn {
+    nixos.services.openvpn.servers.work.config = "...";
+  };
+```
+
+## Global Defaults
+
+`den.default` is a special aspect applied to every host, user, and home:
+
+```nix
+{
+  den.default = {
+    nixos.system.stateVersion = "25.11";
+    homeManager.home.stateVersion = "25.11";
+    includes = [
+      den.provides.define-user
+      den.provides.inputs'
+    ];
+  };
+}
+```
+
+<Aside type="caution">
+Owned configs from `den.default` are deduplicated across pipeline stages.
+Parametric functions in `den.default.includes` are evaluated at every context
+stage. Use `den.lib.take.exactly` if a function should only run in specific contexts.
+</Aside>
+
+## Aspect Meta-Data
+
+Aspects have a `meta` submodule that can be used to attach meta-data
+at the aspect-level.
+
+This is useful for [introspection, for example](https://github.com/vic/den/commit/809834982bb92e77228c91b9c24be8b17c06dfd3), using some key to filter out aspects
+or communicate information about aspects to other tooling like graph generators.
+
+Since `.meta` is a freeformType you can add any custom attribute or import a module on it.
+
+The following are default `meta.*` attributes defined by Den:
+
+```nix
+aspect.name # "igloo", the submodule name
+aspect.meta.loc   # the location [ "den" "aspects" "igloo" ] from where name is derived.
+aspect.meta.name  # "den.aspects.igloo" derived from loc
+aspect.meta.file  # the last file where this aspect was defined.
+aspect.meta.self  # a reference to the aspect module `config`.
+```
+
+You can access meta values by referencing an aspect:
+
+```nix
+den.aspects.igloo.meta.name
+```
+
+Or if an aspect needs to access its own meta data as part of its parametric functor,
+it can do something like:
+
+```nix
+den.aspects.foo =
+  { config, lib, ... }: # module args to access `config.meta`
+  {
+    meta.foo = "bar";
+    __functor = self: ctx:
+      if config.meta.foo == "bar"
+      then { } # do nothing, skip.
+      {
+        includes = filter (i: someCondition i) self.includes;
+      };
+  }
+```
+
+## Aspect Custom Submodule
+
+In case an aspect needs a custom submodule, it can be added this way:
+
+```nix
+# User aspect `tux`
+den.aspects.tux =
+  { config, ... }: # The function-args style is required for `imports` not to be interpreted as an Aspect class.
+  {
+    imports = [
+      {
+        options = {
+          default-key = lib.mkOption {
+            type = with lib.types; str;
+          };
+          keygrip = lib.mkOption {
+            type = with lib.types; str;
+          };
+        };
+      }
+    ];
+
+  default-key = "Hello World!";
+  keygrip = "Hello World!";
+}
+```
+
+And then, you can refer to `tux` aspect from other aspects:
+
+```nix
+{ den, ... }:
+{
+  den.aspects.igloo = {
+    homeManager =
+      { config, ... }:
+      {
+        programs = {
+          gpg = {
+            enable = true;
+            settings.default-key = den.aspects.tux.default-key; # Access the `tux` aspect statically
+          };
+        };
+
+        services = {
+          gpg-agent = {
+            enable = true;
+            enableSshSupport = true;
+            sshKeys = [
+              den.aspects.${config.home.username}.keygrip # Access the current user aspect dynamically
+            ];
+          };
+        };
+      };
+  };
+}
+```
+
+## Aspect Fixed-Point
+
+Aspects are fixed-point, meaning that they can reference themselves, as such:
+
+```nix
+{
+  den.aspects.igloo =
+    {config,...}: # Here, `config` represents the aspect `igloo` itself.
+    {
+      meta = {
+        default-key = "Hello World!";
+      };
+
+      homeManager = {
+        programs = {
+          gpg = {
+            enable = true;
+            settings.default-key = config.meta.default-key;
+          };
+
+          git = {
+            enable = true;
+            settings.signing.key = config.meta.default-key;
+          }
+        };
+      };
+  };
+}
+```
