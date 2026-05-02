@@ -26,7 +26,6 @@
           # thunderbird
           typst
           vesktop
-          vscodium
           # google-chrome
           obsidian
           signal-desktop

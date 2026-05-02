@@ -41,6 +41,8 @@
           curl
           # --- Text Editor ---
           vim
+          vscodium
+
         ];
 
         programs.direnv = {
