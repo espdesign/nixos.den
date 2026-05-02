@@ -5,6 +5,7 @@
     {
       includes = [
         den.aspects.cli
+        den.aspects.fonts
       ];
 
       nixos =
@@ -60,10 +61,10 @@
               ];
             profiles.default.userSettings = {
               # Typeface & Font Settings
-              "editor.fontFamily" = "'JetBrains Mono', 'monospace', monospace";
+              "editor.fontFamily" = "'JetBrainsMono NF', 'JetBrains Mono', 'monospace', monospace";
               "editor.fontLigatures" = false;
               "editor.fontSize" = if host.hostName == "hinekora" then 16 else 14;
-              "terminal.integrated.fontFamily" = "'JetBrains Mono'";
+              "terminal.integrated.fontFamily" = "'JetBrainsMono NF'";
 
               # Line Rulers (Good for maintaining code style/max line lengths)
               "editor.rulers" = [

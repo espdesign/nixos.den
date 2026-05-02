@@ -9,7 +9,7 @@
           font-manager
           font-awesome_5
           noto-fonts
-          jetbrains-mono
+          nerd-fonts.jetbrains-mono
         ];
       };
 
