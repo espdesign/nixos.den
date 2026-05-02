@@ -10,6 +10,9 @@
           nil
           vim
         ];
+        programs.neovim = {
+          enable = true;
+        };
 
       };
   };
