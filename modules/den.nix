@@ -7,12 +7,12 @@
 {
   imports = [ inputs.den.flakeModule ];
 
-  den.schema.user.classes = lib.mkDefault [ "homeManager" ];
+  den.schema.user.classes = lib.mkDefault [ "homeManager" ]; # enable homeManager integration for all users by default.
 
   den.hosts.x86_64-linux.hinekora = {
-    users.espdesign = { classes = [ "homeManager" ]; };
+    users.espdesign = { };
   }; # framework
   den.hosts.x86_64-linux.kitava = {
-    users.espdesign = { classes = [ "homeManager" ]; };
+    users.espdesign = { };
   }; # desktop
 }
