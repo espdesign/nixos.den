@@ -5,7 +5,6 @@
       { pkgs, ... }:
       {
         home.packages = with pkgs; [
-          gh
           opencode
           gemini-cli
           nil
