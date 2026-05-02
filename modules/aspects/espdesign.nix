@@ -11,8 +11,6 @@
       den.provides.primary-user
       (den.provides.user-shell "zsh")
       den.aspects.autologin-vm
-      # den.aspects.dev
-      # den.aspects.gnome
     ];
     nixos =
       { ... }:

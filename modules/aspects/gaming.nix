@@ -49,7 +49,7 @@
           protonup-qt
           mangohud
 
-          #cross-platform runtime environment for Path of Building and Path of Building 2
+          # --- Path of Build 1 & 2 ---
           rusty-path-of-building
         ];
       };
