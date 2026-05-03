@@ -10,6 +10,7 @@
             opencode
             gemini-cli
             nil
+            devenv
             # --- Common Utils ---
             ripgrep
             fd
@@ -56,6 +57,7 @@
               export NIX_LOG=info
               export TERMINAL=ghostty
               export EDITOR=nvim
+              export DIRENV_LOG_FORMAT=""
               if [ -e /home/${user.userName}/.nix-profile/etc/profile.d/nix.sh ]; then . /home/${user.userName}/.nix-profile/etc/profile.d/nix.sh; fi
             '';
           };
@@ -110,7 +112,8 @@
             enable = true;
             enableZshIntegration = true;
             nix-direnv.enable = true;
-            config.global.log_format = "";
+            # Prevent direnv shoowing all env variables on load
+            config.global.hide_env_diff = true;
           };
         };
     };
