@@ -49,6 +49,7 @@
               nrs = "sudo nixos-rebuild switch --flake .";
               # 'flake check' is great before rebuilding
               nfc = "nix flake check";
+              code = "codium";
             };
 
             # Keep your existing env vars

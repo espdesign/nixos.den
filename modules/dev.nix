@@ -25,6 +25,7 @@
         {
           home.packages = with pkgs; [
             # --- Nix Development ---
+            nixd
             nixfmt
             nix-tree
             nix-output-monitor
@@ -81,7 +82,23 @@
 
               # Nix-specific IDE settings
               "nix.enableLanguageServer" = true;
-              "nix.serverPath" = "nil";
+              "nix.serverPath" = "nixd";
+              "nix.serverSettings" = {
+                "nixd" = {
+                  formatting = {
+                    command = [ "nixfmt" ];
+                  };
+                  options = {
+                    nixos = {
+                      expr = ''(builtins.getFlake "''${workspaceFolder}").nixosConfigurations.${host.hostName}.options'';
+                    };
+                    home-manager = {
+                      expr = ''(builtins.getFlake "''${workspaceFolder}").homeConfigurations.${host.hostName}.options'';
+                    };
+                  };
+                };
+              };
+
             };
           };
           #enable gh with credential helper
