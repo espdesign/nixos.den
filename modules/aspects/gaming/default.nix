@@ -3,8 +3,6 @@
   den.aspects.gaming = {
     includes = [
       (den.provides.unfree [
-        "nvidia-x11"
-        "nvidia-settings"
         "steam"
         "steam-unwrapped"
       ])
@@ -13,25 +11,8 @@
     ];
 
     nixos =
-      { config, pkgs, ... }:
+      { pkgs, ... }:
       {
-        # --- Nvidia configuration ---
-        hardware.graphics = {
-          enable = true;
-          enable32Bit = true;
-        };
-
-        services.xserver.videoDrivers = [ "nvidia" ];
-
-        hardware.nvidia = {
-          modesetting.enable = true;
-          powerManagement.enable = true;
-          powerManagement.finegrained = false;
-          open = true;
-          nvidiaSettings = true;
-          package = config.boot.kernelPackages.nvidiaPackages.stable;
-        };
-
         # --- Steam configuration ---
         programs.steam = {
           enable = true;
