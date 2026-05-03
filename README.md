@@ -6,7 +6,7 @@ A personal NixOS configuration repository built using the [**Den**](https://gith
 
 This configuration is "Feature-First." Instead of splitting logic across many directories, all system and user configurations for a single concern (like GNOME or VM testing) are consolidated into **Aspects**.
 
-- **Aspects**: Self-contained functional modules (located in `modules/aspects/`).
+- **Aspects**: Self-contained functional modules (located in `modules/`).
 - **Contexts**: Dynamic pipelines that transform your high-level declarations into NixOS and Home Manager modules.
 - **Dendritic**: Logic is "functorial"—an aspect can adapt its behavior based on whether it is being applied to a Host or a User.
 
@@ -42,7 +42,7 @@ nix flake update
 ## Project Structure
 
 - `modules/den.nix`: **The Brain.** Declarations of all hosts, users, and their relationships.
-- `modules/aspects/`: **The Features.** Implementation of logic (e.g., `gnome.nix`, `vm.nix`).
+- `modules/`: **The Features.** Implementation of logic (e.g., `gnome.nix`, `vm.nix`).
 - `modules/hosts/`: **The Machines.** Machine-specific aspect inclusions.
 - `modules/default.nix`: Global settings applied to all hosts and users.
 - `modules/_nixos/`: Hardware-specific configurations (generated via `nixos-generate-config`).
@@ -51,7 +51,7 @@ nix flake update
 ## Development
 
 ### Adding a New Aspect
-1. Create `modules/aspects/my-feature.nix`.
+1. Create `modules/my-feature.nix`.
 2. Define `den.aspects.my-feature`.
 3. Include it in `modules/default.nix` (globally) or a specific host in `modules/hosts/`.
 

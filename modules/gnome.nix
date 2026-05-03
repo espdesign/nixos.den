@@ -59,8 +59,8 @@
 
           # Set desktop background for dark and light mode directly from the Nix store
           "org/gnome/desktop/background" = {
-            picture-uri = "file://${../assets/wallpaper-molly.jpg}";
-            picture-uri-dark = "file://${../assets/wallpaper-molly.jpg}";
+            picture-uri = "file://${./assets/wallpaper-molly.jpg}";
+            picture-uri-dark = "file://${./assets/wallpaper-molly.jpg}";
           };
         };
       };
