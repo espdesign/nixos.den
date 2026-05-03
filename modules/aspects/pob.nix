@@ -9,13 +9,11 @@
           (final: prev: {
             rusty-path-of-building = prev.rusty-path-of-building.overrideAttrs (oldAttrs: {
               nativeBuildInputs = (oldAttrs.nativeBuildInputs or [ ]) ++ [ final.imagemagick ];
-              postInstall =
-                (oldAttrs.postInstall or "")
-                + ''
-                  # Generate the Red PoE 2 icon using your v10 levels
-                  magick assets/icon.png -modulate 100,100,80 path-of-building-2.png
-                  install -Dm444 path-of-building-2.png $out/share/icons/hicolor/256x256/apps/path-of-building-2.png
-                '';
+              postInstall = (oldAttrs.postInstall or "") + ''
+                # Generate the Red PoE 2 icon using your v10 levels
+                magick assets/icon.png -modulate 100,120,80 path-of-building-2.png
+                install -Dm444 path-of-building-2.png $out/share/icons/hicolor/256x256/apps/path-of-building-2.png
+              '';
               desktopItems = [
                 (final.makeDesktopItem {
                   name = "rusty-path-of-building-1";

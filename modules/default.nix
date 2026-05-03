@@ -9,6 +9,9 @@
     ];
     homeManager.home.stateVersion = "25.11";
     nixos = {
+      home-manager.useGlobalPkgs = true;
+      home-manager.useUserPackages = true;
+
       system.stateVersion = "24.11"; # Did you read the comment?
       # Bootloader.
       boot.loader.systemd-boot.enable = true;

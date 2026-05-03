@@ -15,6 +15,7 @@
       den.aspects.standard-desktop
       den.aspects.gui
       den.aspects.dev
+      den.aspects.gaming.provides.pob
     ];
     nixos =
       { pkgs, ... }:
