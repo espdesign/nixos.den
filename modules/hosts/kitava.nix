@@ -17,7 +17,7 @@
       den.aspects.dev
 
       den.aspects.gaming
-      den.aspects.gaming.provides.nvidia
+      den.aspects.nvidia
 
     ];
     nixos =

@@ -1,6 +1,6 @@
 { den, ... }:
 {
-  den.aspects.gaming.provides.nvidia = {
+  den.aspects.nvidia = {
     includes = [
       (den.provides.unfree [
         "nvidia-x11"
