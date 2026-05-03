@@ -8,6 +8,8 @@
         "steam"
         "steam-unwrapped"
       ])
+      # Include Path of Building sub-aspect by default
+      den.aspects.gaming.provides.pob
     ];
 
     nixos =
@@ -48,9 +50,6 @@
         home.packages = with pkgs; [
           protonup-qt
           mangohud
-
-          # --- Path of Build 1 & 2 ---
-          rusty-path-of-building
         ];
       };
   };

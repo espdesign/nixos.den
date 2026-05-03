@@ -38,10 +38,16 @@
             disable-user-extensions = false;
             # Enable the app indicator extension (tray icons)
             enabled-extensions = [ "appindicatorsupport@rgcjonas.gmail.com" ];
+
+            # To find app desktop names
+            # ls $(nix-build '<nixpkgs>' -A firefox)/share/applications/
             favorite-apps = [
               "org.gnome.Nautilus.desktop"
               "firefox.desktop"
               "com.mitchellh.ghostty.desktop"
+              "codium.desktop"
+              "steam.desktop"
+              "vesktop.desktop"
             ];
           };
 
@@ -53,8 +59,8 @@
 
           # Set desktop background for dark and light mode directly from the Nix store
           "org/gnome/desktop/background" = {
-            picture-uri = "file://${../wallpaper-molly.jpg}";
-            picture-uri-dark = "file://${../wallpaper-molly.jpg}";
+            picture-uri = "file://${../assets/wallpaper-molly.jpg}";
+            picture-uri-dark = "file://${../assets/wallpaper-molly.jpg}";
           };
         };
       };
