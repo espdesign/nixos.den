@@ -53,7 +53,7 @@
             folders = {
               "syncdocs" = {
                 id = "gfrgi-utm7w";
-                path = "/home/espdesign/Documents/syncdocs";
+                path = "~/Syncthing";
                 devices = [ "homelab" ];
               };
             };
