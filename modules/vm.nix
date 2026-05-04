@@ -52,4 +52,25 @@
           };
         };
     };
+
+  # --- 4. TTY Autologin Provide (Parametric) ---
+  den.provides.tty-autologin = userName: {
+    nixos =
+      { pkgs, lib, ... }:
+      {
+        systemd.services."getty@tty1".enable = false;
+        systemd.services."autologin@tty1" = {
+          description = "Autologin on tty1";
+          wantedBy = [ "multi-user.target" ];
+          after = [ "getty.target" ];
+          serviceConfig = {
+            Type = "idle";
+            ExecStart = "${lib.getBin pkgs.systemd}/bin/agetty --autologin ${userName} --noclear tty1 linux";
+            Restart = "always";
+            StandardInput = "tty";
+            StandardOutput = "tty";
+          };
+        };
+      };
+  };
 }
