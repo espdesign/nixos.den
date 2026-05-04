@@ -3,7 +3,7 @@
   ...
 }:
 {
-  den.aspects.test-cli = {
+  den.aspects.valako = {
     includes = [
       den.provides.hostname
       (den.provides.tty-autologin "espdesign")
