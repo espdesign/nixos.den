@@ -79,6 +79,7 @@
 
               "editor.formatOnSave" = true;
               "editor.minimap.enabled" = false;
+              "explorer.confirmDelete" = false;
 
               # Nix-specific IDE settings
               "nix.enableLanguageServer" = true;

@@ -9,13 +9,17 @@
   den.aspects.kitava = {
     includes = [
       den.provides.hostname
-      den.aspects.standard-desktop
+
     ];
     provides.to-users.includes = [
-      den.aspects.standard-desktop
       den.aspects.gui
       den.aspects.dev
-
+      den.aspects.gnome
+      den.aspects.pipewire-sound
+      den.aspects.vm
+      den.aspects.cups-print
+      den.aspects.fonts
+      #specific to gaming desktop
       den.aspects.gaming
       den.aspects.nvidia
 
