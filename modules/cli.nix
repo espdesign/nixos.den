@@ -1,7 +1,7 @@
-{ den, ... }:
+{ ... }:
 {
   den.aspects.cli =
-    { user, ... }:
+    { user, host, ... }:
     {
       homeManager =
         { pkgs, ... }:
@@ -49,6 +49,8 @@
               # 'flake check' is great before rebuilding
               nfc = "nix flake check";
               code = "codium";
+              nix-edit = "code ~/git/nixos.den";
+              nix-apply = "sudo nixos-rebuild switch --flake ~/git/nixos.den#${host.hostName}";
             };
 
             # Keep your existing env vars
