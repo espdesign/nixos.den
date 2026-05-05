@@ -6,6 +6,7 @@
   den.default = {
     # Set desired DE aspect.
     includes = [
+      den.aspects.nix-helpers
     ];
     homeManager.home.stateVersion = "25.11";
     nixos = {

@@ -24,12 +24,6 @@
         { pkgs, ... }:
         {
           home.packages = with pkgs; [
-            # --- Nix Development ---
-            nixd
-            nixfmt
-            nix-tree
-            nix-output-monitor
-
             # --- Dev Servers ---
             package-version-server
             dockerfile-language-server

@@ -31,6 +31,7 @@
             signal-desktop
             slack
             spotify
+            kdePackages.kolourpaint
           ];
           programs.ghostty = {
             enable = true;
