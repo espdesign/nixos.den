@@ -35,10 +35,10 @@
               with pkgs.vscode-extensions;
               [
                 jnoortheen.nix-ide
-                # dbaeumer.vscode-eslint
-                # esbenp.prettier-vscode
-                # astro-build.astro-vscode
-                # bradlc.vscode-tailwindcss
+                dbaeumer.vscode-eslint
+                esbenp.prettier-vscode
+                astro-build.astro-vscode
+                bradlc.vscode-tailwindcss
               ]
               ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
                 # Adding extensions NOT in nixpkgs:
