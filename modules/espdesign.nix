@@ -1,7 +1,5 @@
 {
-  inputs,
   den,
-  lib,
   ...
 }:
 {
@@ -16,15 +14,15 @@
       { ... }:
       {
         users.users.espdesign = {
-          initalHashedPassword = "$6$kk8o25Zeru3ZiUyL$zoRQ7si4zE2As8pL6D96w/VLktcIF7Zg1Ovn976JitlkQ68LiXKneJ/vMGGR7DAowq7sXqRGQVHRkq2rQ5MTU1";
+          initialHashedPassword = "$6$kk8o25Zeru3ZiUyL$zoRQ7si4zE2As8pL6D96w/VLktcIF7Zg1Ovn976JitlkQ68LiXKneJ/vMGGR7DAowq7sXqRGQVHRkq2rQ5MTU1";
           openssh.authorizedKeys.keys = [
-            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGPhmanAAkAGH5uCbfbzreywiWKZxb0IABvatKPg52Tj evanpendergraft@gmail.com"
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBVT8QAQNC1TJROywn6DfVEbRmcuTjVlKBar+4OOZZ1S"
           ];
         };
       };
 
     homeManager =
-      { pkgs, ... }:
+      { ... }:
       {
         programs.git = {
           enable = true;

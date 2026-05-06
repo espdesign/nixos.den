@@ -18,6 +18,7 @@
           # enable docker
           virtualisation.docker.enable = true;
           users.extraGroups.docker.members = [ user.userName ];
+
         };
 
       homeManager =
@@ -85,11 +86,18 @@
                   };
                   options = {
                     nixos = {
-                      expr = ''(builtins.getFlake "''${workspaceFolder}").nixosConfigurations.${host.hostName}.options'';
+                      expr =
+                        ''(builtins.getFlake "''
+                        + "\${workspaceFolder}"
+                        + ''").nixosConfigurations.${host.hostName}.options'';
                     };
                     home-manager = {
-                      expr = ''(builtins.getFlake "''${workspaceFolder}").homeConfigurations.${host.hostName}.options'';
+                      expr =
+                        ''(builtins.getFlake "''
+                        + "\${workspaceFolder}"
+                        + ''").nixosConfigurations.${host.hostName}.options.home-manager.users.type.getSubOptions []'';
                     };
+
                   };
                 };
               };
