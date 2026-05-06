@@ -15,7 +15,12 @@
     nixos =
       { ... }:
       {
-        users.users.espdesign.hashedPassword = "$6$kk8o25Zeru3ZiUyL$zoRQ7si4zE2As8pL6D96w/VLktcIF7Zg1Ovn976JitlkQ68LiXKneJ/vMGGR7DAowq7sXqRGQVHRkq2rQ5MTU1";
+        users.users.espdesign = {
+          initalHashedPassword = "$6$kk8o25Zeru3ZiUyL$zoRQ7si4zE2As8pL6D96w/VLktcIF7Zg1Ovn976JitlkQ68LiXKneJ/vMGGR7DAowq7sXqRGQVHRkq2rQ5MTU1";
+          openssh.authorizedKeys.keys = [
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGPhmanAAkAGH5uCbfbzreywiWKZxb0IABvatKPg52Tj evanpendergraft@gmail.com"
+          ];
+        };
       };
 
     homeManager =

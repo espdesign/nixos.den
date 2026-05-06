@@ -7,6 +7,7 @@
     # Set desired DE aspect.
     includes = [
       den.aspects.nix-helpers
+      den.aspects.ssh
     ];
     homeManager.home.stateVersion = "25.11";
     nixos = {
