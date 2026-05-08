@@ -19,6 +19,15 @@
             "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBVT8QAQNC1TJROywn6DfVEbRmcuTjVlKBar+4OOZZ1S"
           ];
         };
+        networking.firewall = {
+          enable = true;
+          allowedTCPPorts = [
+            3000
+          ];
+          allowedUDPPorts = [ 3000 ];
+
+        };
+
       };
 
     homeManager =
