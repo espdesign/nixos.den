@@ -1,27 +1,38 @@
 on:
   pull_request:
   push:
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
 jobs:
   flake-check:
-    strategy:
-      matrix:
-        os: [ubuntu-latest] #add macos-latest for testing if needed
-    name: Nix flake check ${{matrix.os}}
-    runs-on: ${{matrix.os}}
+    runs-on: ubuntu-latest
     steps:
-      - uses: wimpysworld/nothing-but-nix@main
-        if: matrix.os == 'ubuntu-latest'
       - uses: DeterminateSystems/nix-installer-action@main
       - uses: DeterminateSystems/magic-nix-cache-action@main
       - uses: actions/checkout@v5
-      - run: nix flake metadata
       - run: |
           cat <<-EOF > modules/ci-runtime.nix
-          {
-            _module.args.CI = true;
-          }
+          { _module.args.CI = true; }
           EOF
       - run: nix flake check
+
+  build-hosts:
+    needs: flake-check
+    strategy:
+      matrix:
+        host: [hinekora, kitava, valako]
+    name: Build ${{ matrix.host }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - uses: actions/checkout@v5
+      - run: |
+          cat <<-EOF > modules/ci-runtime.nix
+          { _module.args.CI = true; }
+          EOF
+      - name: Build Toplevel
+        run: nix build .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel --accept-flake-config
