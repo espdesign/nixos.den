@@ -26,8 +26,11 @@
       };
 
     homeManager =
-      { ... }:
+      { pkgs, ... }:
       {
+        home.packages = with pkgs; [
+          ghostty.terminfo
+        ];
         programs.git = {
           enable = true;
           signing.format = null;
