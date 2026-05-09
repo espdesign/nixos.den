@@ -122,8 +122,6 @@
               image: ghcr.io/seerr-team/seerr:latest
               container_name: seerr
               environment:
-                - PUID=1000
-                - PGID=1000
                 - TZ=America/New_York
               ports:
                 - 5055:5055
