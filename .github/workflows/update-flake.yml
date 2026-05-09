@@ -82,19 +82,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.FLAKE_UPDATE_TOKEN }}
         run: |
-          WARNINGS=""
-          for f in /tmp/warnings/*.txt; do
-            if [ -s "$f" ]; then
-              HOST=$(basename "$f" .txt | sed 's/^warnings-//')
-              WARNINGS="$WARNINGS### $HOST"$'\n'"\`\`\`"$'\n'"$(cat "$f")"$'\n'"\`\`\`"$'\n'
-            fi
-          done
-          BODY="Automated flake.lock update."
-          if [ -n "$WARNINGS" ]; then
-            BODY="$BODY"$'\n\n'"## Eval Warnings"$'\n\n'"$WARNINGS"
-          fi
           gh pr create \
             --title "chore: update flake.lock" \
-            --body "$BODY" \
+            --body "$(.github/scripts/build-pr-body.sh /tmp/warnings)" \
             --label "dependencies" \
             --label "automated"
