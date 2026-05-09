@@ -1,0 +1,114 @@
+name: "Check Nixpkgs Unstable Channel"
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  UPDATE_BRANCH: update-nixpkgs-unstable
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.compare.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare channel rev vs flake.lock
+        id: compare
+        run: |
+          CHANNEL_REV=$(curl -sL https://channels.nixos.org/nixpkgs-unstable/git-revision)
+          LOCKED_REV=$(python3 -c "import json; print(json.load(open('flake.lock'))['nodes']['nixpkgs']['locked']['rev'])")
+          echo "channel=$CHANNEL_REV" >> "$GITHUB_OUTPUT"
+          echo "locked=$LOCKED_REV" >> "$GITHUB_OUTPUT"
+          if [ "$CHANNEL_REV" != "$LOCKED_REV" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  update:
+    needs: check
+    if: needs.check.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      updated: ${{ steps.push.outputs.updated }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - run: nix flake update nixpkgs
+      - name: Commit and force push
+        id: push
+        run: |
+          if ! git diff --quiet flake.lock; then
+            git checkout -b "$UPDATE_BRANCH"
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add flake.lock
+            git commit -m "chore: update nixpkgs-unstable"
+            git push --force origin "$UPDATE_BRANCH"
+            echo "updated=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "updated=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  build-hosts:
+    needs: update
+    if: needs.update.outputs.updated == 'true'
+    strategy:
+      matrix:
+        host: [hinekora, kitava, valako]
+    name: Build ${{ matrix.host }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: $UPDATE_BRANCH
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - name: Build Toplevel
+        run: |
+          nix build .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel --accept-flake-config 2> /tmp/warnings-raw.txt
+          grep -i 'warning:' /tmp/warnings-raw.txt > /tmp/warnings-${{ matrix.host }}.txt || true
+
+      - name: Upload eval warnings
+        uses: actions/upload-artifact@v4
+        with:
+          name: warnings-${{ matrix.host }}
+          path: /tmp/warnings-${{ matrix.host }}.txt
+
+  create-pr:
+    needs: [build-hosts, update]
+    if: needs.update.outputs.updated == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: warnings-*
+          path: /tmp/warnings
+          merge-multiple: true
+      - name: Create or update Pull Request
+        env:
+          GH_TOKEN: ${{ secrets.FLAKE_UPDATE_TOKEN }}
+        run: |
+          BODY="$(.github/scripts/build-pr-body.sh /tmp/warnings)"
+          EXISTING=$(gh pr list --head "$UPDATE_BRANCH" --state open --json number --jq '.[0].number // empty')
+          if [ -n "$EXISTING" ]; then
+            gh pr edit "$EXISTING" --body "$BODY"
+            echo "Updated existing PR #$EXISTING"
+          else
+            gh pr create \
+              --head "$UPDATE_BRANCH" \
+              --title "chore: update nixpkgs-unstable" \
+              --body "$BODY" \
+              --label "dependencies" \
+              --label "automated"
+          fi
