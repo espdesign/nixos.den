@@ -1,6 +1,23 @@
 { ... }:
 {
   den.aspects.homelab-compose = {
+    nixos =
+      { ... }:
+      {
+        networking.firewall.allowedTCPPorts = [
+          32400 # Plex
+          8989 # Sonarr
+          7878 # Radarr
+          9696 # Prowlarr
+          8080 # qBittorrent WebUI
+          6881 # qBittorrent BitTorrent port
+        ];
+        networking.firewall.allowedUDPPorts = [
+          32400 # Plex
+          6881 # qBittorrent BitTorrent port
+        ];
+      };
+
     homeManager =
       { ... }:
       {
