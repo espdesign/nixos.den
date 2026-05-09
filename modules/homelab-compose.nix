@@ -24,6 +24,32 @@
         # /mnt/seagate14/data
         home.file."docker-compose.yml".text = ''
           services:
+            gluetun:
+              image: qmcgaw/gluetun
+              container_name: gluetun
+              cap_add:
+                - NET_ADMIN
+              devices:
+                - /dev/net/tun:/dev/net/tun
+              ports:
+                - 8989:8989 # sonarr
+                - 7878:7878 # radarr
+                - 9696:9696 # prowlarr
+                - 8080:8080 # qbittorrent webui
+                - 6881:6881 # qbittorrent
+                - 6881:6881/udp
+              volumes:
+                - /mnt/seagate14/data/config/gluetun:/gluetun
+              env_file:
+                - /mnt/seagate14/data/config/gluetun/secrets.env
+              environment:
+                - VPN_SERVICE_PROVIDER=nordvpn
+                - VPN_TYPE=wireguard
+                # Optional: Filter by country or let it auto-pick the best one
+                # - SERVER_COUNTRIES=United States
+                - TZ=America/New_York
+              restart: unless-stopped
+
             plex:
               image: lscr.io/linuxserver/plex:latest
               container_name: plex
@@ -40,6 +66,7 @@
             sonarr:
               image: lscr.io/linuxserver/sonarr:latest
               container_name: sonarr
+              network_mode: "service:gluetun"
               environment:
                 - PUID=1000
                 - PGID=1000
@@ -47,13 +74,12 @@
               volumes:
                 - /mnt/seagate14/data/config/sonarr:/config
                 - /mnt/seagate14/data:/data
-              ports:
-                - 8989:8989
               restart: unless-stopped
 
             radarr:
               image: lscr.io/linuxserver/radarr:latest
               container_name: radarr
+              network_mode: "service:gluetun"
               environment:
                 - PUID=1000
                 - PGID=1000
@@ -61,26 +87,24 @@
               volumes:
                 - /mnt/seagate14/data/config/radarr:/config
                 - /mnt/seagate14/data:/data
-              ports:
-                - 7878:7878
               restart: unless-stopped
 
             prowlarr:
               image: lscr.io/linuxserver/prowlarr:latest
               container_name: prowlarr
+              network_mode: "service:gluetun"
               environment:
                 - PUID=1000
                 - PGID=1000
                 - TZ=America/New_York
               volumes:
                 - /mnt/seagate14/data/config/prowlarr:/config
-              ports:
-                - 9696:9696
               restart: unless-stopped
 
             qbittorrent:
               image: lscr.io/linuxserver/qbittorrent:latest
               container_name: qbittorrent
+              network_mode: "service:gluetun"
               environment:
                 - PUID=1000
                 - PGID=1000
@@ -89,10 +113,6 @@
               volumes:
                 - /mnt/seagate14/data/config/qbittorrent:/config
                 - /mnt/seagate14/data/downloads:/data/downloads
-              ports:
-                - 8080:8080
-                - 6881:6881
-                - 6881:6881/udp
               restart: unless-stopped
         '';
       };
