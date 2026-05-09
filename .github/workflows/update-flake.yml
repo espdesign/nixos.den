@@ -1,7 +1,7 @@
 name: "Automated Flake Update"
 on:
   schedule:
-    - cron: '0 3 * * 0' # Run every Sunday at 3:00 AM
+    - cron: "0 3 * * 0" # Run every Sunday at 3:00 AM
   workflow_dispatch: # Allow manual triggers
 
 permissions:
@@ -17,6 +17,7 @@ jobs:
       - uses: DeterminateSystems/update-flake-lock@main
         with:
           pr-title: "chore: update flake.lock"
+          token: ${{ secrets.FLAKE_UPDATE_TOKEN }}
           pr-labels: |
             dependencies
             automated
