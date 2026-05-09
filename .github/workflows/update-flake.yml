@@ -25,6 +25,8 @@ jobs:
           if ! git diff --quiet flake.lock; then
             BRANCH="update-flake/$(date +'%Y-%m-%d-%H%M%S')"
             git checkout -b "$BRANCH"
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
             git add flake.lock
             git commit -m "chore: update flake.lock"
             git push origin "$BRANCH"
@@ -53,7 +55,15 @@ jobs:
           { _module.args.CI = true; }
           EOF
       - name: Build Toplevel
-        run: nix build .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel --accept-flake-config
+        run: |
+          nix build .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel --accept-flake-config 2> /tmp/warnings-raw.txt
+          grep -i 'warning:' /tmp/warnings-raw.txt > /tmp/warnings-${{ matrix.host }}.txt || true
+
+      - name: Upload eval warnings
+        uses: actions/upload-artifact@v4
+        with:
+          name: warnings-${{ matrix.host }}
+          path: /tmp/warnings-${{ matrix.host }}.txt
 
   create-pr:
     needs: [build-hosts, update]
@@ -63,12 +73,28 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ needs.update.outputs.branch }}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: warnings-*
+          path: /tmp/warnings
+          merge-multiple: true
       - name: Create Pull Request
         env:
           GH_TOKEN: ${{ secrets.FLAKE_UPDATE_TOKEN }}
         run: |
+          WARNINGS=""
+          for f in /tmp/warnings/*.txt; do
+            if [ -s "$f" ]; then
+              HOST=$(basename "$f" .txt | sed 's/^warnings-//')
+              WARNINGS="$WARNINGS### $HOST"$'\n'"\`\`\`"$'\n'"$(cat "$f")"$'\n'"\`\`\`"$'\n'
+            fi
+          done
+          BODY="Automated flake.lock update."
+          if [ -n "$WARNINGS" ]; then
+            BODY="$BODY"$'\n\n'"## Eval Warnings"$'\n\n'"$WARNINGS"
+          fi
           gh pr create \
             --title "chore: update flake.lock" \
-            --body "Automated flake.lock update." \
+            --body "$BODY" \
             --label "dependencies" \
             --label "automated"
