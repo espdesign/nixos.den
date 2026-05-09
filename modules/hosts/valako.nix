@@ -11,6 +11,7 @@
     provides.to-users.includes = [
       den.aspects.cli
       den.aspects.docker
+      den.aspects.homelab-compose
     ];
     nixos =
       { ... }:
