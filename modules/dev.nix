@@ -51,8 +51,8 @@
                 {
                   name = "theme-monokai-pro-vscode";
                   publisher = "monokai";
-                  version = "2.0.12";
-                  sha256 = "e/IjWP+GgA8dTJWV9nloFVuv68Bh5DiW1QcVXpUdS3Q=";
+                  version = "2.0.13";
+                  sha256 = "5bKwVzDfZoSipR04tPDx9jbKhYsSsa3z6Ei9E2jhudo=";
                 }
               ];
             profiles.default.userSettings = {
