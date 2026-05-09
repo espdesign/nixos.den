@@ -30,7 +30,7 @@
             package-version-server
             dockerfile-language-server
           ];
-          programs.vscodium = {
+          programs.vscode = {
             enable = true;
             package = pkgs.vscodium;
             profiles.default.extensions =
