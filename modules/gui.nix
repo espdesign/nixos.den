@@ -13,6 +13,10 @@
         ])
       ];
 
+      nixos = {
+        networking.networkmanager.enable = true;
+      };
+
       homeManager =
         { pkgs, ... }:
         {
