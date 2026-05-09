@@ -10,6 +10,7 @@
     ];
     provides.to-users.includes = [
       den.aspects.cli
+      den.aspects.docker
     ];
     nixos =
       { ... }:

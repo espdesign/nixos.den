@@ -6,6 +6,7 @@
       includes = [
         den.aspects.cli
         den.aspects.fonts
+        den.aspects.docker
       ];
 
       nixos =
