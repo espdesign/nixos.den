@@ -1,3 +1,4 @@
+name: "flake-check"
 on:
   pull_request:
   push:

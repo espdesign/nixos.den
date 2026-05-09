@@ -1,4 +1,4 @@
-name: "Automated Flake Update"
+name: "Automated Flake Update (sunday)"
 on:
   schedule:
     - cron: "0 3 * * 0"
