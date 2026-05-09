@@ -1,8 +1,8 @@
 name: "Automated Flake Update"
 on:
   schedule:
-    - cron: "0 3 * * 0" # Run every Sunday at 3:00 AM
-  workflow_dispatch: # Allow manual triggers
+    - cron: "0 3 * * 0"
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -11,13 +11,64 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
+    outputs:
+      branch: ${{ steps.push.outputs.branch }}
+      updated: ${{ steps.push.outputs.updated }}
     steps:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@main
-      - uses: DeterminateSystems/update-flake-lock@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - run: nix flake update
+      - name: Commit and push
+        id: push
+        run: |
+          if ! git diff --quiet flake.lock; then
+            BRANCH="update-flake/$(date +'%Y-%m-%d-%H%M%S')"
+            git checkout -b "$BRANCH"
+            git add flake.lock
+            git commit -m "chore: update flake.lock"
+            git push origin "$BRANCH"
+            echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+            echo "updated=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "updated=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  build-hosts:
+    needs: update
+    if: needs.update.outputs.updated == 'true'
+    strategy:
+      matrix:
+        host: [hinekora, kitava, valako]
+    name: Build ${{ matrix.host }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
         with:
-          pr-title: "chore: update flake.lock"
-          token: ${{ secrets.FLAKE_UPDATE_TOKEN }}
-          pr-labels: |
-            dependencies
-            automated
+          ref: ${{ needs.update.outputs.branch }}
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - run: |
+          cat <<-EOF > modules/ci-runtime.nix
+          { _module.args.CI = true; }
+          EOF
+      - name: Build Toplevel
+        run: nix build .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel --accept-flake-config
+
+  create-pr:
+    needs: [build-hosts, update]
+    if: needs.update.outputs.updated == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.update.outputs.branch }}
+      - name: Create Pull Request
+        env:
+          GH_TOKEN: ${{ secrets.FLAKE_UPDATE_TOKEN }}
+        run: |
+          gh pr create \
+            --title "chore: update flake.lock" \
+            --body "Automated flake.lock update." \
+            --label "dependencies" \
+            --label "automated"
