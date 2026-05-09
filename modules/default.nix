@@ -13,6 +13,7 @@
     nixos = {
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
+      home-manager.backupFileExtension = ".bak";
 
       system.stateVersion = "24.11"; # Did you read the comment?
       # Bootloader.
