@@ -29,7 +29,7 @@
       { pkgs, ... }:
       {
         home.packages = with pkgs; [
-          ghostty.terminfo
+          ghostty.terminfo # xterm-ghostty support
         ];
         programs.git = {
           enable = true;

@@ -21,6 +21,12 @@
       # Enable networking
       networking.networkmanager.enable = true;
 
+      #static domain names
+      networking.hosts = {
+        "192.168.1.201" = [ "valako" ];
+        "192.168.1.202" = [ "kitava" ];
+      };
+
       # Set your time zone.
       time.timeZone = "America/New_York";
 
