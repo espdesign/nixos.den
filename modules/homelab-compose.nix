@@ -45,8 +45,8 @@
               environment:
                 - VPN_SERVICE_PROVIDER=nordvpn
                 - VPN_TYPE=wireguard
-                # Optional: Filter by country or let it auto-pick the best one
-                # - SERVER_COUNTRIES=United States
+                # Use countries that are very P2P/torrent friendly
+                - SERVER_COUNTRIES=Switzerland,Netherlands
                 - TZ=America/New_York
               restart: unless-stopped
 
