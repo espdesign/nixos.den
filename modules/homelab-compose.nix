@@ -51,6 +51,9 @@
                 # Use countries that are very P2P/torrent friendly
                 - SERVER_COUNTRIES=Switzerland,Netherlands
                 - TZ=America/New_York
+                - DOT=off
+                - DNS_ADDRESS=1.1.1.1
+                - FIREWALL_OUTBOUND_SUBNETS=172.16.0.0/12,192.168.0.0/16
               restart: unless-stopped
 
             plex:
@@ -113,6 +116,8 @@
                 - PGID=1000
                 - TZ=America/New_York
                 - WEBUI_PORT=8080
+                - QBITTORRENT__Advanced__NetworkInterface=tun0
+                - QBITTORRENT__Advanced__OptionalIPAddress=0.0.0.0
               volumes:
                 - /mnt/seagate14/data/config/qbittorrent:/config
                 - /mnt/seagate14/data:/data
