@@ -115,7 +115,7 @@
                 - WEBUI_PORT=8080
               volumes:
                 - /mnt/seagate14/data/config/qbittorrent:/config
-                - /mnt/seagate14/data/downloads:/data/downloads
+                - /mnt/seagate14/data:/data
               restart: unless-stopped
 
             seerr:
