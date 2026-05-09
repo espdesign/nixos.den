@@ -5,12 +5,15 @@
       { ... }:
       {
         networking.firewall.allowedTCPPorts = [
+          80 # SWAG HTTP
+          443 # SWAG HTTPS
           32400 # Plex
           8989 # Sonarr
           7878 # Radarr
           9696 # Prowlarr
           8080 # qBittorrent WebUI
           6881 # qBittorrent BitTorrent port
+          5055 # Seerr
         ];
         networking.firewall.allowedUDPPorts = [
           32400 # Plex
@@ -113,6 +116,37 @@
               volumes:
                 - /mnt/seagate14/data/config/qbittorrent:/config
                 - /mnt/seagate14/data/downloads:/data/downloads
+              restart: unless-stopped
+
+            seerr:
+              image: ghcr.io/seerr-team/seerr:latest
+              container_name: seerr
+              environment:
+                - PUID=1000
+                - PGID=1000
+                - TZ=America/New_York
+              ports:
+                - 5055:5055
+              volumes:
+                - /mnt/seagate14/data/config/seerr:/app/config
+              restart: unless-stopped
+
+            swag:
+              image: lscr.io/linuxserver/swag:latest
+              container_name: swag
+              cap_add:
+                - NET_ADMIN
+              environment:
+                - PUID=1000
+                - PGID=1000
+                - TZ=America/New_York
+              env_file:
+                - /mnt/seagate14/data/config/swag/secrets.env
+              volumes:
+                - /mnt/seagate14/data/config/swag:/config
+              ports:
+                - 443:443
+                - 80:80
               restart: unless-stopped
         '';
       };
