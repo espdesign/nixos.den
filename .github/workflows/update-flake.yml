@@ -50,10 +50,6 @@ jobs:
           ref: ${{ needs.update.outputs.branch }}
       - uses: DeterminateSystems/nix-installer-action@main
       - uses: DeterminateSystems/magic-nix-cache-action@main
-      - run: |
-          cat <<-EOF > modules/ci-runtime.nix
-          { _module.args.CI = true; }
-          EOF
       - name: Build Toplevel
         run: |
           nix build .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel --accept-flake-config 2> /tmp/warnings-raw.txt
