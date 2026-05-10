@@ -39,8 +39,8 @@
                 - 7878:7878 # radarr
                 - 9696:9696 # prowlarr
                 - 8080:8080 # qbittorrent webui
-                - 6881:6881 # qbittorrent
-                - 6881:6881/udp
+                - 6881:51735 # qbittorrent
+                - 6881:51735/udp
               volumes:
                 - /mnt/seagate14/data/config/gluetun:/gluetun
               env_file:
