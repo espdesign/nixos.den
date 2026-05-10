@@ -1,4 +1,4 @@
-name: "Reusable Flake Update"
+name: "Reusable: Flake Update Pipeline"
 on:
   workflow_call:
     inputs:

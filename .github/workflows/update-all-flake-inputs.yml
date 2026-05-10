@@ -1,4 +1,4 @@
-name: "Automated Flake Update (sunday)"
+name: "Update All Flake Inputs"
 on:
   schedule:
     - cron: "0 3 * * 0"
@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   update:
-    uses: ./.github/workflows/reusable-flake-update.yml
+    uses: ./.github/workflows/reusable-flake-update-pipeline.yml
     with:
       update-command: 'nix flake update'
       branch-name: 'update-flake'

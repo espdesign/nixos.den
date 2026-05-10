@@ -1,4 +1,4 @@
-name: "flake-check"
+name: "Flake Check"
 on:
   pull_request:
   push:
