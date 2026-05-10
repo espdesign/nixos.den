@@ -12,12 +12,12 @@
           7878 # Radarr
           9696 # Prowlarr
           8080 # qBittorrent WebUI
-          6881 # qBittorrent BitTorrent port
+          # 6881 # qBittorrent BitTorrent port
           5055 # Seerr
         ];
         networking.firewall.allowedUDPPorts = [
           32400 # Plex
-          6881 # qBittorrent BitTorrent port
+          # 6881 # qBittorrent BitTorrent port
         ];
       };
 
@@ -47,6 +47,7 @@
                 - /mnt/seagate14/data/config/gluetun/secrets.env
               environment:
                 - VPN_SERVICE_PROVIDER=airvpn
+                - FIREWALL_VPN_INPUT_PORTS=51735
                 - VPN_TYPE=wireguard
                 - TZ=America/New_York
                 - DNS_ADDRESS=1.1.1.1
