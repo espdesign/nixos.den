@@ -46,12 +46,9 @@
               env_file:
                 - /mnt/seagate14/data/config/gluetun/secrets.env
               environment:
-                - VPN_SERVICE_PROVIDER=nordvpn
+                - VPN_SERVICE_PROVIDER=airvpn
                 - VPN_TYPE=wireguard
-                # Use countries that are very P2P/torrent friendly
-                - SERVER_COUNTRIES=Switzerland,Netherlands
                 - TZ=America/New_York
-                - DOT=off
                 - DNS_ADDRESS=1.1.1.1
                 - FIREWALL_OUTBOUND_SUBNETS=172.16.0.0/12,192.168.0.0/16
               restart: unless-stopped
