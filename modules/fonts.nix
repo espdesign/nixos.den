@@ -1,4 +1,4 @@
-{ den, pkgs, ... }:
+{ den, ... }:
 {
   den.aspects.fonts = {
     nixos =

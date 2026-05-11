@@ -1,7 +1,6 @@
-{ den, lib, ... }:
+{ den, ... }:
 {
-  # We extend the gaming aspect by providing a 'pob' sub-aspect
-  den.aspects.gaming.provides.pob = {
+  den.aspects.pob = {
     nixos =
       { pkgs, ... }:
       {

@@ -7,7 +7,7 @@
         "steam-unwrapped"
       ])
       # Include Path of Building sub-aspect by default
-      den.aspects.gaming.provides.pob
+      den.aspects.pob
     ];
 
     nixos =

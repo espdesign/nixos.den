@@ -15,11 +15,6 @@
           # Useful for many dev tools and scripts that expect /usr/bin/env
           # Keep this at system level as it's a global service.
           # services.envfs.enable = true;
-
-          # enable docker
-          virtualisation.docker.enable = true;
-          users.extraGroups.docker.members = [ user.userName ];
-
         };
 
       homeManager =
