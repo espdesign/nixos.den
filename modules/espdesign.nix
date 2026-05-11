@@ -28,8 +28,18 @@
     homeManager =
       { pkgs, ... }:
       {
+        programs.ssh = {
+          enable = true;
+          addKeysToAgent = true;
+          matchBlocks = {
+            "*" = {
+              identityFile = "~/.ssh/id_ed25519_main";
+            };
+          };
+        };
+
         home.packages = with pkgs; [
-          ghostty.terminfo # xterm-ghostty support
+          ghostty.terminfo
         ];
         programs.git = {
           enable = true;
