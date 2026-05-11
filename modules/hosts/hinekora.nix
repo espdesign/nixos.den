@@ -14,7 +14,7 @@
     provides.to-users.includes = [
       den.aspects.gui
       den.aspects.dev
-      den.aspects.pob
+      den.aspects.gaming.provides.pob
       den.aspects.gnome
       den.aspects.pipewire-sound
       den.aspects.vm
