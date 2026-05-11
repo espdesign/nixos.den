@@ -51,6 +51,7 @@
                 - FIREWALL_VPN_INPUT_PORTS=51735
                 - VPN_TYPE=wireguard
                 - TZ=America/New_York
+                - DNS_OVER_TLS=True
                 - DNS_ADDRESS=1.1.1.1
                 - FIREWALL_OUTBOUND_SUBNETS=172.16.0.0/12,192.168.0.0/16
               restart: unless-stopped
