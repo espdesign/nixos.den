@@ -26,12 +26,16 @@ jobs:
           # Ensure CACHIX_AUTH_TOKEN is set in your repository secrets to populate the cache
           authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
 
+      - name: Register Nix Problem Matcher
+        run: echo "::add-matcher::.github/nix-problem-matcher.json"
+
       - name: Update flake.lock
         run: nix flake update
 
       - name: Verify host builds
         id: build
         run: |
+          all_success=true
           build_host() {
             local host=$1
             echo "Building $host..."
@@ -41,6 +45,7 @@ jobs:
               echo "${host}_status=success" >> "$GITHUB_OUTPUT"
             else
               echo "${host}_status=failure" >> "$GITHUB_OUTPUT"
+              all_success=false
             fi
             # Sanitize log for markdown (remove backticks and other problematic chars)
             local log_content=$(tail -n 50 "$log_file" | sed 's/`//g')
@@ -54,8 +59,11 @@ jobs:
           build_host "hinekora"
           build_host "kitava"
           build_host "valako"
+          
+          echo "all_success=$all_success" >> "$GITHUB_OUTPUT"
 
       - name: Create Pull Request
+        if: steps.build.outputs.all_success == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.FLAKE_UPDATE_TOKEN }}
