@@ -30,7 +30,7 @@
       {
         programs.ssh = {
           enable = true;
-          addKeysToAgent = true;
+          addKeysToAgent = "yes";
           matchBlocks = {
             "*" = {
               identityFile = "~/.ssh/id_ed25519_main";
