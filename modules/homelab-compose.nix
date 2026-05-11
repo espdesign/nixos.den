@@ -29,6 +29,7 @@
               ports:
                 - 8989:8989 # sonarr
                 - 7878:7878 # radarr
+                - 7474:7474 # autobrr
                 - 9696:9696 # prowlarr
                 - 8080:8080 # qbittorrent webui
                 - 51735:51735 # qbittorrent
@@ -96,6 +97,18 @@
                 - TZ=America/New_York
               volumes:
                 - /mnt/seagate14/data/config/prowlarr:/config
+              restart: unless-stopped
+
+            autobrr:
+              image: ghcr.io/autobrr/autobrr:latest
+              container_name: autobrr
+              network_mode: "service:gluetun"
+              environment:
+                - PUID=1000
+                - PGID=1000
+                - TZ=America/New_York
+              volumes:
+                - /mnt/seagate14/data/config/autobrr:/config
               restart: unless-stopped
 
             qbittorrent:
