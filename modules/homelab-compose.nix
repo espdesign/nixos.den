@@ -5,19 +5,10 @@
       { ... }:
       {
         networking.firewall.allowedTCPPorts = [
-          80 # SWAG HTTP
-          443 # SWAG HTTPS
           32400 # Plex
-          8989 # Sonarr
-          7878 # Radarr
-          9696 # Prowlarr
-          8080 # qBittorrent WebUI
-          # 6881 # qBittorrent BitTorrent port
-          5055 # Seerr
         ];
         networking.firewall.allowedUDPPorts = [
           32400 # Plex
-          # 6881 # qBittorrent BitTorrent port
         ];
       };
 
@@ -40,8 +31,8 @@
                 - 7878:7878 # radarr
                 - 9696:9696 # prowlarr
                 - 8080:8080 # qbittorrent webui
-                - 6881:51735 # qbittorrent
-                - 6881:51735/udp
+                - 51735:51735 # qbittorrent
+                - 51735:51735/udp
               volumes:
                 - /mnt/seagate14/data/config/gluetun:/gluetun
               env_file:
