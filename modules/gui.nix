@@ -36,6 +36,7 @@
             slack
             spotify
             kdePackages.kolourpaint
+            element-desktop
           ];
           programs.ghostty = {
             enable = true;
