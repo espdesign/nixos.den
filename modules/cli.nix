@@ -51,6 +51,7 @@
               code = "codium";
               nix-edit = "code ~/git/nixos.den";
               nix-apply = "sudo nixos-rebuild switch --flake ~/git/nixos.den#${host.hostName}";
+              nix-update = "git -C ~/git/nixos.den pull && nix-apply";
             };
 
             # Keep your existing env vars
