@@ -19,5 +19,7 @@ jobs:
           # CI only needs to read from the cache, so no authToken required here
           # unless you want every push to populate the cache.
           # authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+      - name: Register Nix Problem Matcher
+        run: echo "::add-matcher::.github/nix-problem-matcher.json"
       - name: Flake Check
         run: nix flake check

@@ -1,0 +1,22 @@
+{
+  "problemMatcher": [
+    {
+      "owner": "nix-evaluation-warning",
+      "pattern": [
+        {
+          "regexp": "^(?:trace: )?evaluation warning: (.*)$",
+          "message": 1
+        }
+      ]
+    },
+    {
+      "owner": "nix-warning",
+      "pattern": [
+        {
+          "regexp": "^warning: (.*)$",
+          "message": 1
+        }
+      ]
+    }
+  ]
+}
