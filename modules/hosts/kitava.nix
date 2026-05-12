@@ -12,6 +12,7 @@
 
     ];
     provides.to-users.includes = [
+      den.aspects.syncthing
       den.aspects.gui
       den.aspects.dev
       den.aspects.gnome

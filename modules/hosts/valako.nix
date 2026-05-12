@@ -9,6 +9,7 @@
       den.provides.hostname
     ];
     provides.to-users.includes = [
+      den.aspects.syncthing
       den.aspects.cli
       den.aspects.docker
       den.aspects.homelab-compose
