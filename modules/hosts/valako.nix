@@ -12,6 +12,7 @@
       den.aspects.cli
       den.aspects.docker
       den.aspects.homelab-compose
+      den.aspects.qbit-manage
     ];
     nixos =
       { ... }:
