@@ -1,7 +1,7 @@
 { den, ... }:
 {
   den.aspects.syncthing =
-    { ... }:
+    { user, host, ... }:
     {
       nixos = {
         networking.firewall.allowedTCPPorts = [ 22000 ];
