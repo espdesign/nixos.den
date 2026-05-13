@@ -10,6 +10,16 @@
       ]
     },
     {
+      "owner": "nix-unknown-flake-output",
+      "severity": "notice",
+      "pattern": [
+        {
+          "regexp": "^warning: unknown flake output '.*'$",
+          "message": 0
+        }
+      ]
+    },
+    {
       "owner": "nix-warning",
       "severity": "warning",
       "pattern": [
