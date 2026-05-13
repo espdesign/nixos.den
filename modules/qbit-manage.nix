@@ -34,6 +34,11 @@
               max_time: 4320
               strategy: last_no_matter_what
               cleanup: true
+            default:
+              priority: 2
+              max_ratio: 0.0
+              strategy: last_no_matter_what
+              cleanup: true
         '';
 
         qbitWrapper = pkgs.writeShellScript "qbit-manage-wrapper" ''
