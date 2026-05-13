@@ -11,6 +11,7 @@
     },
     {
       "owner": "nix-warning",
+      "severity": "warning",
       "pattern": [
         {
           "regexp": "^warning: (.*)$",
