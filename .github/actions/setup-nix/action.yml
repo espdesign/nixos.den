@@ -1,0 +1,29 @@
+name: Setup Nix
+description: Install Nix, configure Cachix cache, and register problem matchers
+
+inputs:
+  cachix-auth-token:
+    description: Cachix auth token for write access (omit for read-only)
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - uses: cachix/install-nix-action@v30
+      with:
+        nix_path: nixpkgs=channel:nixos-unstable
+
+    - if: inputs.cachix-auth-token != ''
+      uses: cachix/cachix-action@v17
+      with:
+        name: espdesign
+        authToken: ${{ inputs.cachix-auth-token }}
+
+    - if: inputs.cachix-auth-token == ''
+      uses: cachix/cachix-action@v17
+      with:
+        name: espdesign
+
+    - shell: bash
+      run: echo "::add-matcher::.github/nix-problem-matcher.json"

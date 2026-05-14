@@ -1,0 +1,53 @@
+name: Build NixOS Host
+description: Build a NixOS host configuration and report status with truncated, sanitized logs
+
+inputs:
+  host:
+    description: Host name to build
+    required: true
+  flake-attribute:
+    description: Flake attribute to build (derived from host by default)
+    required: false
+    default: ''
+  max-log-lines:
+    description: Maximum lines to capture from build log
+    required: false
+    default: '200'
+
+outputs:
+  status:
+    description: Build result ('success' or 'failure')
+    value: ${{ steps.build.outputs.status }}
+  log:
+    description: Truncated build output, sanitized for safe display
+    value: ${{ steps.build.outputs.log }}
+
+runs:
+  using: composite
+  steps:
+    - id: build
+      shell: bash
+      run: |
+        host="${{ inputs.host }}"
+        attr="${{ inputs.flake-attribute }}"
+        if [ -z "$attr" ]; then
+          attr=".#nixosConfigurations.${host}.config.system.build.toplevel"
+        fi
+        max_lines=${{ inputs.max-log-lines }}
+
+        echo "Building ${host} (${attr})..."
+        log_file="$(mktemp)"
+        if nix build "$attr" --no-link > "$log_file" 2>&1; then
+          echo "status=success" >> "$GITHUB_OUTPUT"
+        else
+          echo "status=failure" >> "$GITHUB_OUTPUT"
+        fi
+
+        log_content="$(tail -n "$max_lines" "$log_file" | sed 's/`//g')"
+        delimiter="EOF_$(date +%s)_${host}"
+        {
+          echo "log<<${delimiter}"
+          echo "$log_content"
+          echo "${delimiter}"
+        } >> "$GITHUB_OUTPUT"
+        rm -f "$log_file"
