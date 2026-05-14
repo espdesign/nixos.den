@@ -4,15 +4,12 @@ on:
     - cron: '0 0 * * *' # Daily at midnight
   workflow_dispatch: # Allow manual trigger
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   update-and-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           # Use the provided token for checkout to allow triggering other workflows if needed
           token: ${{ secrets.FLAKE_UPDATE_TOKEN }}
@@ -23,7 +20,7 @@ jobs:
           nix_path: nixpkgs=channel:nixos-unstable
 
       - name: Setup Cachix
-        uses: cachix/cachix-action@v16
+        uses: cachix/cachix-action@v17
         with:
           name: espdesign
           # Ensure CACHIX_AUTH_TOKEN is set in your repository secrets to populate the cache
@@ -35,7 +32,7 @@ jobs:
       - name: Update flake.lock
         run: |
           nix flake update
-          git add flake.lock
+          git add -A
 
       - name: Verify host builds
         id: build
@@ -69,7 +66,7 @@ jobs:
 
       - name: Create Pull Request
         if: steps.build.outputs.all_success == 'true'
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.FLAKE_UPDATE_TOKEN }}
           commit-message: "chore(deps): update flake.lock"
