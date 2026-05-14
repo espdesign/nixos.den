@@ -43,7 +43,7 @@ runs:
           echo "status=failure" >> "$GITHUB_OUTPUT"
         fi
 
-        log_content="$(tail -n "$max_lines" "$log_file" | sed 's/`//g')"
+        log_content="$(tail -n "$max_lines" "$log_file" | grep -v 'copying \(path\|source\)' | sed 's/`//g')"
         delimiter="EOF_$(date +%s)_${host}"
         {
           echo "log<<${delimiter}"
