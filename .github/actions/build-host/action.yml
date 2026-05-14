@@ -47,7 +47,7 @@ runs:
           echo "--- End build log ---"
         fi
 
-        log_content="$(tail -n "$max_lines" "$log_file" | { grep -v 'copying \(path\|source\)' || true; } | sed 's/`//g')"
+        log_content="$({ grep -v 'copying \(path\|source\)' "$log_file" || true; } | tail -n "$max_lines" | sed 's/`//g')"
         delimiter="EOF_$(date +%s)_${host}"
         {
           echo "log<<${delimiter}"
