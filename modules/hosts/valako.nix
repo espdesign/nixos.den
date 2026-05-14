@@ -7,6 +7,7 @@
   den.aspects.valako = {
     includes = [
       den.provides.hostname
+      den.aspects.hardened-server
     ];
     provides.to-users.includes = [
       den.aspects.syncthing
