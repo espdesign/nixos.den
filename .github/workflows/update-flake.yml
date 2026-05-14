@@ -20,7 +20,7 @@ jobs:
 
       - name: Update flake.lock
         run: |
-          nix flake update
+          nix flake update 2>&1 | { grep -v -E 'warning: (Git tree .* is dirty|updating lock file)' || true; }
           git add -A
 
       - uses: ./.github/actions/build-host
