@@ -13,6 +13,8 @@ runs:
     - uses: cachix/install-nix-action@v30
       with:
         nix_path: nixpkgs=channel:nixos-unstable
+        extra_nix_config: |
+          download-buffer-size = 268435456
 
     - if: inputs.cachix-auth-token != ''
       uses: cachix/cachix-action@v17
