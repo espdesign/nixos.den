@@ -30,7 +30,7 @@
               priority: 1
               include_all_tags:
                 - czteam
-              max_ratio: 2.0
+              max_ratio: 1.0
               max_time: 4320
               strategy: last_no_matter_what
               cleanup: true
@@ -131,7 +131,10 @@
 
         systemd.services.qbit-manage = {
           description = "qBitManage Seeding Enforcement";
-          after = [ "network.target" "network-online.target" ];
+          after = [
+            "network.target"
+            "network-online.target"
+          ];
           wants = [ "network-online.target" ];
           serviceConfig = {
             Type = "oneshot";
