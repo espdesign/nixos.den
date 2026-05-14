@@ -55,3 +55,11 @@ runs:
           echo "${delimiter}"
         } >> "$GITHUB_OUTPUT"
         rm -f "$log_file"
+
+    - shell: bash
+      run: |
+        status="${{ steps.build.outputs.status }}"
+        host="${{ inputs.host }}"
+        icon=":white_check_mark:"
+        [ "$status" = "failure" ] && icon=":x:"
+        echo "${icon} **${host}**: ${status}" >> "$GITHUB_STEP_SUMMARY"
