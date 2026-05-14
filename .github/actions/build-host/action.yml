@@ -40,10 +40,14 @@ runs:
         if nix build "$attr" --no-link > "$log_file" 2>&1; then
           echo "status=success" >> "$GITHUB_OUTPUT"
         else
+          rc=$?
           echo "status=failure" >> "$GITHUB_OUTPUT"
+          echo "--- Build failed ---"
+          cat "$log_file"
+          echo "--- End build log ---"
         fi
 
-        log_content="$(tail -n "$max_lines" "$log_file" | grep -v 'copying \(path\|source\)' | sed 's/`//g')"
+        log_content="$(tail -n "$max_lines" "$log_file" | { grep -v 'copying \(path\|source\)' || true; } | sed 's/`//g')"
         delimiter="EOF_$(date +%s)_${host}"
         {
           echo "log<<${delimiter}"
