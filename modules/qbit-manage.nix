@@ -75,13 +75,13 @@
           (final: prev: {
             qbit-manage = prev.python3Packages.buildPythonApplication {
               pname = "qbit-manage";
-              version = "4.7.1-develop6";
+              version = "4.7.1-develop7";
 
               src = prev.fetchFromGitHub {
                 owner = "StuffAnThings";
                 repo = "qbit_manage";
-                rev = "ff54453fd92663e5779799d821f228d4090f8d79";
-                hash = "sha256-2qd5zzt5a7wJKC6usvc5KLHV7fXT0pG4znlmmcqgvl8=";
+                rev = "42790d3d4817a12013a49b1e6b92ee7d9d3d90de";
+                hash = "sha256-xDEEoTTkadW7MUzJhRWpvMexZwlNe5z7Mm1C60uMsBE=";
               };
 
               pyproject = true;
@@ -137,7 +137,7 @@
           ];
           wants = [ "network-online.target" ];
           serviceConfig = {
-            Type = "oneshot";
+            Type = "simple";
             ExecStart = "${qbitWrapper}";
           };
         };
