@@ -62,7 +62,6 @@
               export TERMINAL=ghostty
               export EDITOR=nvim
               export DIRENV_LOG_FORMAT=""
-              eval "$(devenv hook zsh)"
               if [ -e /home/${user.userName}/.nix-profile/etc/profile.d/nix.sh ]; then . /home/${user.userName}/.nix-profile/etc/profile.d/nix.sh; fi
             '';
           };
