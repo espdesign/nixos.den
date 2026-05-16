@@ -57,6 +57,7 @@
             # Keep your existing env vars
             # enable devenv auto activation with eval.
             initContent = ''
+              eval "$(devenv hook zsh)"
               export NIX_PATH=nixpkgs=channel:nixos-unstable
               export NIX_LOG=info
               export TERMINAL=ghostty
