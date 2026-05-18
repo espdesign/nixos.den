@@ -20,6 +20,8 @@ modules/
 ├── den.nix         # Schema: hosts, users, classes
 ├── hosts/          # Machine aspects
 ├── _nixos/         # nixos-generate-config outputs (untouched)
+├── assets/         # Static assets (wallpapers, etc.)
+├── gaming/         # Gaming-related aspects (Steam, etc.)
 └── *.nix           # Feature aspects
 ```
 
