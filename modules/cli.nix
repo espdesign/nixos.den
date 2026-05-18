@@ -18,6 +18,7 @@
             tree
             wget
             curl
+            btop
           ];
           programs.neovim = {
             enable = true;
@@ -39,6 +40,7 @@
               # 2. Modern Replacements
               cat = "bat"; # bat is a colorful 'cat'
               grep = "rg"; # ripgrep is faster than grep
+              top = "btop";
               ls = "eza --icons"; # eza is a better 'ls'
               ll = "eza -l --icons --git -a";
               lt = "eza --tree --level=2 --icons";

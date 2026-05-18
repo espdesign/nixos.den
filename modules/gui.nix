@@ -46,9 +46,9 @@
               window-decoration = "auto";
               background-opacity = 0.95;
               background-blur = true;
+              window-height = 35;
+              window-width = 125;
 
-              # Optional: Explicitly set the font if you want
-              #               # font-family = "JetBrainsMono Nerd Font";
             };
           };
           programs.firefox = {
