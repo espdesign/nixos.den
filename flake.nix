@@ -11,8 +11,17 @@
 
   outputs =
     inputs:
-    (inputs.nixpkgs.lib.evalModules {
-      modules = [ (inputs.import-tree ./modules) ];
-      specialArgs.inputs = inputs;
-    }).config.flake;
+    let
+      flakeOutputs =
+        (inputs.nixpkgs.lib.evalModules {
+          modules = [ (inputs.import-tree ./modules) ];
+          specialArgs.inputs = inputs;
+        }).config.flake;
+    in
+    builtins.removeAttrs flakeOutputs [
+      "denful"
+      "resolved"
+      "id_hash"
+      "collisionPolicy"
+    ];
 }
