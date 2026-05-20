@@ -13,3 +13,5 @@ jobs:
       - uses: ./.github/actions/setup-nix
       - name: Flake Check
         run: ./scripts/flake-check.sh
+      - name: Lint Check
+        run: nix shell nixpkgs#nixfmt nixpkgs#deadnix nixpkgs#statix -c ./scripts/lint.sh

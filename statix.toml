@@ -1,0 +1,6 @@
+# Configuration file for statix linter
+
+disabled = [
+  "empty_pattern",
+  "repeated_keys"
+]

@@ -14,7 +14,9 @@
         ];
         nix.settings = {
           extra-substituters = [ "https://espdesign.cachix.org" ];
-          extra-trusted-public-keys = [ "espdesign.cachix.org-1:34FPcbdU/W26YZRFCqIrVcF6uzLkcuUZvUTN5kqxebA=" ];
+          extra-trusted-public-keys = [
+            "espdesign.cachix.org-1:34FPcbdU/W26YZRFCqIrVcF6uzLkcuUZvUTN5kqxebA="
+          ];
         };
         programs.nh = {
           enable = true;
