@@ -31,10 +31,10 @@
         programs.ssh = {
           enable = true;
           enableDefaultConfig = false;
-          matchBlocks = {
+          settings = {
             "*" = {
-              addKeysToAgent = "yes";
-              identityFile = "~/.ssh/id_ed25519_main";
+              AddKeysToAgent = "yes";
+              IdentityFile = "~/.ssh/id_ed25519_main";
             };
           };
         };
