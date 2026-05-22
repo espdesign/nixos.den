@@ -19,8 +19,8 @@
       };
 
     homeManager =
-      { ... }:
-      {
+      { host, lib, ... }:
+      lib.optionalAttrs (host.hostName != "hinekora") {
         services.easyeffects.enable = true;
       };
   };
