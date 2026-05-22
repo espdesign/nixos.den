@@ -39,16 +39,23 @@
               fi
 
               BEHIND=false
+              AHEAD=false
               if [ "$CURRENT_REV" = "unknown" ] || [ "$CURRENT_REV" = "dirty" ]; then
                 LOCAL_REV=$(git -C "$REPO_DIR" rev-parse HEAD)
                 if [ "$LOCAL_REV" != "$REMOTE_REV" ]; then
-                  BEHIND=true
+                  if git -C "$REPO_DIR" merge-base --is-ancestor "$LOCAL_REV" "$REMOTE_REV" 2>/dev/null; then
+                    BEHIND=true
+                  else
+                    AHEAD=true
+                  fi
                 fi
               else
-                # Check if the remote revision is an ancestor of the currently running system's revision.
-                # If it's NOT an ancestor, then the running system is behind the remote main branch.
                 if ! git -C "$REPO_DIR" merge-base --is-ancestor "$REMOTE_REV" "$CURRENT_REV" 2>/dev/null; then
-                  BEHIND=true
+                  if git -C "$REPO_DIR" merge-base --is-ancestor "$CURRENT_REV" "$REMOTE_REV" 2>/dev/null; then
+                    BEHIND=true
+                  else
+                    AHEAD=true
+                  fi
                 fi
               fi
 
@@ -58,11 +65,18 @@
                   --icon=software-update-available \
                   "NixOS Update Available" \
                   "New changes found on main. Run 'nix-update' to update your system."
+                echo "Updates available on main. Run 'nix-update' to update."
+              elif [ "$AHEAD" = true ]; then
+                echo "Local changes ahead of remote. Push or update to sync."
+              else
+                echo "System is up to date."
               fi
             '';
           };
         in
         {
+          home.packages = [ updateCheckScript ];
+
           systemd.user.services.update-notifier = {
             Unit = {
               Description = "Check for NixOS configuration updates on remote main branch";
