@@ -1,7 +1,7 @@
 # den.default is a special aspect that automatically applies its configuration to every
 # host, user, and home in your Den setup, making it ideal for global settings.
 
-{ den, ... }:
+{ den, inputs, ... }:
 {
   den.default = {
     # Set desired DE aspect.
@@ -16,6 +16,7 @@
       home-manager.backupFileExtension = "bak";
 
       system.stateVersion = "24.11"; # Did you read the comment?
+      system.configurationRevision = inputs.self.rev or inputs.self.dirtyRev or "dirty";
       # Bootloader.
       boot.loader.systemd-boot.enable = true;
       boot.loader.efi.canTouchEfiVariables = true;
