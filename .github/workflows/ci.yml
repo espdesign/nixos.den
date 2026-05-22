@@ -12,6 +12,6 @@ jobs:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-nix
       - name: Flake Check
-        run: ./scripts/flake-check.sh
+        run: ./.github/scripts/flake-check.sh
       - name: Lint Check
-        run: nix shell nixpkgs#nixfmt nixpkgs#deadnix nixpkgs#statix -c ./scripts/lint.sh
+        run: nix shell nixpkgs#nixfmt nixpkgs#deadnix nixpkgs#statix -c ./.github/scripts/lint.sh

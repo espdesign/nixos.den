@@ -45,15 +45,6 @@
               ll = "eza -l --icons --git -a";
               lt = "eza --tree --level=2 --icons";
 
-              # 3. Nix Shortcuts
-              nrb = "sudo nixos-rebuild build --flake .";
-              nrs = "sudo nixos-rebuild switch --flake .";
-              # 'flake check' is great before rebuilding
-              nfc = "nix flake check";
-              code = "codium";
-              nix-edit = "code ~/git/nixos.den";
-              nix-apply = "sudo nixos-rebuild switch --flake ~/git/nixos.den#${host.hostName}";
-              nix-update = "git -C ~/git/nixos.den pull && nix-apply";
             };
 
             # Keep your existing env vars

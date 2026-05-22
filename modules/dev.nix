@@ -7,6 +7,7 @@
         den.aspects.cli
         den.aspects.fonts
         den.aspects.docker
+        den.aspects.scripts
       ];
 
       nixos =
@@ -21,6 +22,7 @@
         { pkgs, ... }:
         {
           home.packages = with pkgs; [
+            (pkgs.writeShellScriptBin "code" ''exec ${pkgs.vscodium}/bin/codium "$@"'')
             # --- Dev Servers ---
             package-version-server
             dockerfile-language-server

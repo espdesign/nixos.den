@@ -5,10 +5,7 @@ set -euo pipefail
 echo "🚀 Running pre-push checks..."
 
 echo ""
-./scripts/lint.sh
-
-echo ""
-./scripts/flake-check.sh
+nix-lint
 
 echo ""
 echo "✅ All checks passed! Proceeding with push."

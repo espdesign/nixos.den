@@ -1,6 +1,6 @@
 { den, ... }:
 {
-  den.aspects.update-notifier =
+  den.aspects.scripts.provides.update-notifier =
     { user, host, ... }:
     {
       homeManager =
@@ -13,7 +13,7 @@
         let
           repoDir = "${config.home.homeDirectory}/git/nixos.den";
           updateCheckScript = pkgs.writeShellApplication {
-            name = "check-nixos-updates";
+            name = "nix-check-updates";
             runtimeInputs = [
               pkgs.git
               pkgs.libnotify
@@ -84,7 +84,7 @@
             };
             Service = {
               Type = "oneshot";
-              ExecStart = "${updateCheckScript}/bin/check-nixos-updates";
+              ExecStart = "${updateCheckScript}/bin/nix-check-updates";
             };
           };
 

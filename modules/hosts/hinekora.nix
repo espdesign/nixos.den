@@ -17,7 +17,7 @@
       den.aspects.dev
       den.aspects.pob
       den.aspects.gnome
-      den.aspects.update-notifier
+      den.aspects.scripts
       den.aspects.pipewire-sound
       den.aspects.vm
       den.aspects.cups-print

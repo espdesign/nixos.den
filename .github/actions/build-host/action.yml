@@ -27,7 +27,7 @@ runs:
   steps:
     - id: build
       shell: bash
-      run: ./scripts/build-host.sh "${{ inputs.host }}" "${{ inputs.flake-attribute }}" "${{ inputs.max-log-lines }}"
+      run: ./.github/scripts/build-host.sh "${{ inputs.host }}" "${{ inputs.flake-attribute }}" "${{ inputs.max-log-lines }}"
 
     - shell: bash
       run: |
