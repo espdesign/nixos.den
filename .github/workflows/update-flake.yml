@@ -144,7 +144,7 @@ jobs:
           echo "## Build Results" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           for host in hinekora kitava valako; do
-            status="${{ steps.status.outputs[format('{0}', host)] }}"
+            status="${!host}"
             icon=":white_check_mark:"
             [ "$status" != "success" ] && icon=":x:"
             echo "${icon} **${host}**: ${status}" >> "$GITHUB_STEP_SUMMARY"
