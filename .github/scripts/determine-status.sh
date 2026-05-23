@@ -26,7 +26,7 @@ for host in $(echo "$hosts" | jq -r '.[]'); do
   if [ -f "$log_file" ]; then
     log_content=$(cat "$log_file")
     if [ -n "$log_content" ]; then
-      if grep -q -i -E "^\s*(warning|trace):" "$log_file"; then
+      if grep -q -i -E "(warning|trace):" "$log_file"; then
         summary_title="⚠️ ${host} Build Log (with warnings)"
       else
         summary_title="📄 ${host} Build Log"

@@ -29,8 +29,8 @@ else
   echo "--- End build log ---"
 fi
 
-# Filter out build noise
-log_content="$({ grep -v -E "copying (path|source)|these .* paths will be fetched|^  /nix/store/|Git tree .* is dirty|building '/nix/store/" "$log_file" || true; } | tail -n "$max_lines" | sed 's/`//g')"
+# Tail the last lines, strip backticks, and highlight warnings
+log_content="$(tail -n "$max_lines" "$log_file" | sed 's/`//g' | sed -E 's/^([[:space:]]*(warning|trace|evaluation warning):)/⚠️ \1/I')"
 
 if [ -n "${GITHUB_OUTPUT:-}" ]; then
   delimiter="EOF_$(date +%s)_${host}"

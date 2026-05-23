@@ -12,7 +12,7 @@ inputs:
   max-log-lines:
     description: Maximum lines to capture from build log
     required: false
-    default: '200'
+    default: '50'
 
 outputs:
   status:
