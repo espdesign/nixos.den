@@ -21,11 +21,16 @@ for host in $(echo "$hosts" | jq -r '.[]'); do
 
   status_lines=$(printf "%s\n- **%s**: %s" "$status_lines" "$host" "$status")
 
-  # Extract evaluation/other warnings if present in log
+  # Include build log if present
   if [ -f "$log_file" ]; then
-    warnings=$(grep -i -E "^\s*(warning|trace):" "$log_file" || true)
-    if [ -n "$warnings" ]; then
-      status_lines=$(printf "%s\n  <details>\n  <summary>⚠️ Evaluation Warnings</summary>\n\n  \`\`\`\n%s\n  \`\`\`\n  </details>" "$status_lines" "$warnings")
+    log_content=$(cat "$log_file")
+    if [ -n "$log_content" ]; then
+      if grep -q -i -E "^\s*(warning|trace):" "$log_file"; then
+        summary_title="⚠️ Build Log (with warnings)"
+      else
+        summary_title="📄 Build Log"
+      fi
+      status_lines=$(printf "%s\n  <details>\n  <summary>%s</summary>\n\n  \`\`\`\n%s\n  \`\`\`\n  </details>" "$status_lines" "$summary_title" "$log_content")
     fi
   fi
 done
