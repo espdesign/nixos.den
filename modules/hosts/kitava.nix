@@ -21,6 +21,7 @@
       den.aspects.vm
       den.aspects.cups-print
       den.aspects.fonts
+      den.aspects.virt-manager
       #specific to gaming desktop
       den.aspects.gaming
       den.aspects.nvidia
