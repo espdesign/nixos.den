@@ -30,7 +30,7 @@ else
 fi
 
 # Filter out build noise
-log_content="$({ grep -v -E 'copying (path|source)|these .* paths will be fetched|^  /nix/store/|Git tree .* is dirty|building .nix/store/' "$log_file" || true; } | tail -n "$max_lines" | sed 's/`//g')"
+log_content="$({ grep -v -E "copying (path|source)|these .* paths will be fetched|^  /nix/store/|Git tree .* is dirty|building '/nix/store/" "$log_file" || true; } | tail -n "$max_lines" | sed 's/`//g')"
 
 if [ -n "${GITHUB_OUTPUT:-}" ]; then
   delimiter="EOF_$(date +%s)_${host}"
