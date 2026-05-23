@@ -47,17 +47,36 @@ jobs:
           git push --force origin HEAD:refs/heads/update/flake-lock
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
-  build-hinekora:
+  list-hosts:
     needs: update
     if: needs.update.outputs.has-changes == 'true'
     runs-on: ubuntu-latest
     outputs:
-      status: ${{ steps.build.outputs.status }}
-      log: ${{ steps.build.outputs.log }}
+      hosts: ${{ steps.hosts.outputs.hosts }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
+          ref: ${{ needs.update.outputs.head-sha }}
+
+      - name: Discover hosts
+        id: hosts
+        run: |
+          hosts=$(ls modules/hosts/*.nix | xargs -I{} basename {} .nix | jq -R -s -c 'split("\n") | map(select(. != ""))')
+          echo "hosts=$hosts" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: [update, list-hosts]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        host: ${{ fromJson(needs.list-hosts.outputs.hosts) }}
+      fail-fast: false
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.FLAKE_UPDATE_TOKEN }}
           ref: ${{ needs.update.outputs.head-sha }}
 
       - uses: ./.github/actions/setup-nix
@@ -67,54 +86,27 @@ jobs:
       - uses: ./.github/actions/build-host
         id: build
         with:
-          host: hinekora
+          host: ${{ matrix.host }}
 
-  build-kitava:
-    needs: update
-    if: needs.update.outputs.has-changes == 'true'
-    runs-on: ubuntu-latest
-    outputs:
-      status: ${{ steps.build.outputs.status }}
-      log: ${{ steps.build.outputs.log }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          ref: ${{ needs.update.outputs.head-sha }}
+      - name: Save build result
+        if: always()
+        run: |
+          echo "${{ steps.build.outputs.status }}" > build-status.txt
+          echo "${{ steps.build.outputs.log }}" > build-log.txt
 
-      - uses: ./.github/actions/setup-nix
+      - name: Upload build result
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          cachix-auth-token: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-
-      - uses: ./.github/actions/build-host
-        id: build
-        with:
-          host: kitava
-
-  build-valako:
-    needs: update
-    if: needs.update.outputs.has-changes == 'true'
-    runs-on: ubuntu-latest
-    outputs:
-      status: ${{ steps.build.outputs.status }}
-      log: ${{ steps.build.outputs.log }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          ref: ${{ needs.update.outputs.head-sha }}
-
-      - uses: ./.github/actions/setup-nix
-        with:
-          cachix-auth-token: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-
-      - uses: ./.github/actions/build-host
-        id: build
-        with:
-          host: valako
+          name: build-${{ matrix.host }}
+          path: |
+            ${{ github.workspace }}/build-status.txt
+            ${{ github.workspace }}/build-log.txt
+          retention-days: 1
+          overwrite: true
 
   create-pr:
-    needs: [update, build-hinekora, build-kitava, build-valako]
+    needs: [update, list-hosts, build]
     if: always() && needs.update.result == 'success' && needs.update.outputs.has-changes == 'true'
     runs-on: ubuntu-latest
     steps:
@@ -124,29 +116,52 @@ jobs:
           token: ${{ secrets.FLAKE_UPDATE_TOKEN }}
           ref: update/flake-lock
 
+      - name: Download all build results
+        uses: actions/download-artifact@v4
+        with:
+          path: build-results
+          pattern: build-*
+
       - name: Determine build status
         id: status
         run: |
-          hinekora="${{ needs.build-hinekora.outputs.status || 'skipped' }}"
-          kitava="${{ needs.build-kitava.outputs.status || 'skipped' }}"
-          valako="${{ needs.build-valako.outputs.status || 'skipped' }}"
-          
-          echo "hinekora=$hinekora" >> "$GITHUB_OUTPUT"
-          echo "kitava=$kitava" >> "$GITHUB_OUTPUT"
-          echo "valako=$valako" >> "$GITHUB_OUTPUT"
-          
-          if [ "$hinekora" = "success" ] && [ "$kitava" = "success" ] && [ "$valako" = "success" ]; then
-            echo "all-success=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "all-success=false" >> "$GITHUB_OUTPUT"
-          fi
+          all_success=true
+          hosts='${{ needs.list-hosts.outputs.hosts }}'
+          status_lines=""
+
+          for host in $(echo "$hosts" | jq -r '.[]'); do
+            status_file="build-results/build-${host}/build-status.txt"
+            if [ -f "$status_file" ]; then
+              status=$(cat "$status_file")
+            else
+              status="skipped"
+            fi
+
+            if [ "$status" != "success" ]; then
+              all_success=false
+            fi
+
+            status_lines="${status_lines}\n- **${host}**: ${status}"
+          done
+
+          echo "all-success=${all_success}" >> "$GITHUB_OUTPUT"
+          echo "host-status<<EOF" >> "$GITHUB_OUTPUT"
+          echo -e "$status_lines" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
 
       - name: Build Summary
         run: |
+          hosts='${{ needs.list-hosts.outputs.hosts }}'
           echo "## Build Results" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          for host in hinekora kitava valako; do
-            status="${!host}"
+
+          for host in $(echo "$hosts" | jq -r '.[]'); do
+            status_file="build-results/build-${host}/build-status.txt"
+            if [ -f "$status_file" ]; then
+              status=$(cat "$status_file")
+            else
+              status="skipped"
+            fi
             icon=":white_check_mark:"
             [ "$status" != "success" ] && icon=":x:"
             echo "${icon} **${host}**: ${status}" >> "$GITHUB_STEP_SUMMARY"
@@ -168,33 +183,7 @@ jobs:
             Automated flake update and host build verification.
 
             ### Build Status
-            - **hinekora**: ${{ steps.status.outputs.hinekora }}
-            - **kitava**: ${{ steps.status.outputs.kitava }}
-            - **valako**: ${{ steps.status.outputs.valako }}
-
-            <details>
-            <summary>hinekora build logs</summary>
-
-            ```text
-            ${{ needs.build-hinekora.outputs.log }}
-            ```
-            </details>
-
-            <details>
-            <summary>kitava build logs</summary>
-
-            ```text
-            ${{ needs.build-kitava.outputs.log }}
-            ```
-            </details>
-
-            <details>
-            <summary>valako build logs</summary>
-
-            ```text
-            ${{ needs.build-valako.outputs.log }}
-            ```
-            </details>
+            ${{ steps.status.outputs.host-status }}
 
             This PR was generated by the [Update Flake](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) workflow.
           labels: |
