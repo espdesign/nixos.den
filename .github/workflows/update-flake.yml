@@ -156,21 +156,13 @@ jobs:
               all_success=false
             fi
 
-            status_lines="${status_lines}
-- **${host}**: ${status}"
+            status_lines=$(printf "%s\n- **%s**: %s" "$status_lines" "$host" "$status")
 
             # Extract evaluation/other warnings if present in log
             if [ -f "$log_file" ]; then
               warnings=$(grep -i -E "^\s*(warning|trace):" "$log_file" || true)
               if [ -n "$warnings" ]; then
-                status_lines="${status_lines}
-  <details>
-  <summary>⚠️ Evaluation Warnings</summary>
-
-  \`\`\`
-${warnings}
-  \`\`\`
-  </details>"
+                status_lines=$(printf "%s\n  <details>\n  <summary>⚠️ Evaluation Warnings</summary>\n\n  \`\`\`\n%s\n  \`\`\`\n  </details>" "$status_lines" "$warnings")
               fi
             fi
           done
