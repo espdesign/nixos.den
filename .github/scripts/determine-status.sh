@@ -4,6 +4,7 @@ set -euo pipefail
 hosts="$1"
 all_success=true
 status_lines=""
+log_lines=""
 
 for host in $(echo "$hosts" | jq -r '.[]'); do
   status_file="build-results/build-${host}/build-status.txt"
@@ -26,22 +27,27 @@ for host in $(echo "$hosts" | jq -r '.[]'); do
     log_content=$(cat "$log_file")
     if [ -n "$log_content" ]; then
       if grep -q -i -E "^\s*(warning|trace):" "$log_file"; then
-        summary_title="⚠️ Build Log (with warnings)"
+        summary_title="⚠️ ${host} Build Log (with warnings)"
       else
-        summary_title="📄 Build Log"
+        summary_title="📄 ${host} Build Log"
       fi
-      status_lines=$(printf "%s\n  <details>\n  <summary>%s</summary>\n\n  \`\`\`\n%s\n  \`\`\`\n  </details>" "$status_lines" "$summary_title" "$log_content")
+      log_lines=$(printf "%s\n\n<details>\n<summary>%s</summary>\n\n\`\`\`\n%s\n\`\`\`\n</details>" "$log_lines" "$summary_title" "$log_content")
     fi
   fi
 done
 
+combined_status="${status_lines}"
+if [ -n "$log_lines" ]; then
+  combined_status=$(printf "%s\n\n### Build Logs%s" "$status_lines" "$log_lines")
+fi
+
 if [ -n "${GITHUB_OUTPUT:-}" ]; then
   echo "all-success=${all_success}" >> "$GITHUB_OUTPUT"
   echo "host-status<<EOF" >> "$GITHUB_OUTPUT"
-  echo "$status_lines" >> "$GITHUB_OUTPUT"
+  echo "$combined_status" >> "$GITHUB_OUTPUT"
   echo "EOF" >> "$GITHUB_OUTPUT"
 else
   echo "all-success=${all_success}"
   echo "host-status:"
-  echo "$status_lines"
+  echo "$combined_status"
 fi
