@@ -3,7 +3,6 @@
   den.aspects.scripts = {
     includes = [
       den.aspects.scripts.provides.update-all
-      den.aspects.scripts.provides.aliases
       den.aspects.scripts.provides.update-notifier
     ];
   };
