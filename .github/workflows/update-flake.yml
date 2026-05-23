@@ -113,7 +113,7 @@ jobs:
 
   create-pr:
     needs: [update, build-hinekora, build-kitava, build-valako]
-    if: always() && needs.update.outputs.has-changes == 'true'
+    if: always() && needs.update.result == 'success' && needs.update.outputs.has-changes == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
