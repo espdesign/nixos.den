@@ -4,7 +4,9 @@ set -euo pipefail
 # Auto-bootstrap if required packages are not in PATH
 if ! command -v nixfmt &>/dev/null || ! command -v deadnix &>/dev/null || ! command -v statix &>/dev/null; then
   echo "Package dependencies missing. Re-running script inside 'nix shell'..."
-  exec nix shell nixpkgs#nixfmt nixpkgs#deadnix nixpkgs#statix -c "$0" "$@"
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  FLAKE_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+  exec nix shell --inputs-from "$FLAKE_DIR" nixpkgs#nixfmt nixpkgs#deadnix nixpkgs#statix -c "$0" "$@"
 fi
 
 

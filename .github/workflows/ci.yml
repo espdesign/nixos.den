@@ -14,4 +14,4 @@ jobs:
       - name: Flake Check
         run: ./.github/scripts/flake-check.sh
       - name: Lint Check
-        run: nix shell nixpkgs#nixfmt nixpkgs#deadnix nixpkgs#statix -c ./.github/scripts/lint.sh
+        run: ./.github/scripts/lint.sh
