@@ -90,9 +90,12 @@ jobs:
 
       - name: Save build result
         if: always()
+        env:
+          STATUS: ${{ steps.build.outputs.status }}
+          LOG: ${{ steps.build.outputs.log }}
         run: |
-          echo "${{ steps.build.outputs.status }}" > build-status.txt
-          echo "${{ steps.build.outputs.log }}" > build-log.txt
+          echo "$STATUS" > build-status.txt
+          echo "$LOG" > build-log.txt
 
       - name: Upload build result
         if: always()
