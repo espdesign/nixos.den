@@ -5,14 +5,17 @@ on:
   workflow_dispatch: # Allow manual trigger
 
 jobs:
-  update-and-test:
+  update:
     runs-on: ubuntu-latest
+    outputs:
+      has-changes: ${{ steps.check.outputs.has-changes }}
+      head-sha: ${{ steps.commit.outputs.sha }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
-          # Use the provided token for checkout to allow triggering other workflows if needed
           token: ${{ secrets.FLAKE_UPDATE_TOKEN }}
+          fetch-depth: 0
 
       - uses: ./.github/actions/setup-nix
         with:
@@ -21,25 +24,134 @@ jobs:
       - name: Update flake.lock
         run: |
           nix flake update 2>&1 | { grep -v -E 'warning: (Git tree .* is dirty|updating lock file)' || true; }
+
+      - name: Check for changes
+        id: check
+        run: |
+          if git diff --quiet; then
+            echo "has-changes=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "has-changes=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit changes
+        id: commit
+        if: steps.check.outputs.has-changes == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
+          git commit -m "chore(deps): update flake.lock"
+          git push origin HEAD:refs/heads/update/flake-lock
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  build-hinekora:
+    needs: update
+    if: needs.update.outputs.has-changes == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      status: ${{ steps.build.outputs.status }}
+      log: ${{ steps.build.outputs.log }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.update.outputs.head-sha }}
+
+      - uses: ./.github/actions/setup-nix
+        with:
+          cachix-auth-token: '${{ secrets.CACHIX_AUTH_TOKEN }}'
 
       - uses: ./.github/actions/build-host
-        id: hinekora
+        id: build
         with:
           host: hinekora
 
+  build-kitava:
+    needs: update
+    if: needs.update.outputs.has-changes == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      status: ${{ steps.build.outputs.status }}
+      log: ${{ steps.build.outputs.log }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.update.outputs.head-sha }}
+
+      - uses: ./.github/actions/setup-nix
+        with:
+          cachix-auth-token: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+
       - uses: ./.github/actions/build-host
-        id: kitava
+        id: build
         with:
           host: kitava
 
+  build-valako:
+    needs: update
+    if: needs.update.outputs.has-changes == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      status: ${{ steps.build.outputs.status }}
+      log: ${{ steps.build.outputs.log }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.update.outputs.head-sha }}
+
+      - uses: ./.github/actions/setup-nix
+        with:
+          cachix-auth-token: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+
       - uses: ./.github/actions/build-host
-        id: valako
+        id: build
         with:
           host: valako
 
+  create-pr:
+    needs: [update, build-hinekora, build-kitava, build-valako]
+    if: always() && needs.update.outputs.has-changes == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.FLAKE_UPDATE_TOKEN }}
+          ref: update/flake-lock
+
+      - name: Determine build status
+        id: status
+        run: |
+          hinekora="${{ needs.build-hinekora.outputs.status || 'skipped' }}"
+          kitava="${{ needs.build-kitava.outputs.status || 'skipped' }}"
+          valako="${{ needs.build-valako.outputs.status || 'skipped' }}"
+          
+          echo "hinekora=$hinekora" >> "$GITHUB_OUTPUT"
+          echo "kitava=$kitava" >> "$GITHUB_OUTPUT"
+          echo "valako=$valako" >> "$GITHUB_OUTPUT"
+          
+          if [ "$hinekora" = "success" ] && [ "$kitava" = "success" ] && [ "$valako" = "success" ]; then
+            echo "all-success=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "all-success=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build Summary
+        run: |
+          echo "## Build Results" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          for host in hinekora kitava valako; do
+            status="${{ steps.status.outputs[format('{0}', host)] }}"
+            icon=":white_check_mark:"
+            [ "$status" != "success" ] && icon=":x:"
+            echo "${icon} **${host}**: ${status}" >> "$GITHUB_STEP_SUMMARY"
+          done
+
       - name: Create Pull Request
-        if: steps.hinekora.outputs.status == 'success' && steps.kitava.outputs.status == 'success' && steps.valako.outputs.status == 'success'
+        if: steps.status.outputs.all-success == 'true'
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.FLAKE_UPDATE_TOKEN }}
@@ -54,15 +166,15 @@ jobs:
             Automated flake update and host build verification.
 
             ### Build Status
-            - **hinekora**: ${{ steps.hinekora.outputs.status }}
-            - **kitava**: ${{ steps.kitava.outputs.status }}
-            - **valako**: ${{ steps.valako.outputs.status }}
+            - **hinekora**: ${{ steps.status.outputs.hinekora }}
+            - **kitava**: ${{ steps.status.outputs.kitava }}
+            - **valako**: ${{ steps.status.outputs.valako }}
 
             <details>
             <summary>hinekora build logs</summary>
 
             ```text
-            ${{ steps.hinekora.outputs.log }}
+            ${{ needs.build-hinekora.outputs.log }}
             ```
             </details>
 
@@ -70,7 +182,7 @@ jobs:
             <summary>kitava build logs</summary>
 
             ```text
-            ${{ steps.kitava.outputs.log }}
+            ${{ needs.build-kitava.outputs.log }}
             ```
             </details>
 
@@ -78,7 +190,7 @@ jobs:
             <summary>valako build logs</summary>
 
             ```text
-            ${{ steps.valako.outputs.log }}
+            ${{ needs.build-valako.outputs.log }}
             ```
             </details>
 
