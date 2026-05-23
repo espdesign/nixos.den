@@ -22,6 +22,8 @@ jobs:
           cachix-auth-token: '${{ secrets.CACHIX_AUTH_TOKEN }}'
 
       - name: Update flake.lock
+        env:
+          GITHUB_TOKEN: ${{ secrets.FLAKE_UPDATE_TOKEN }}
         run: |
           nix flake update 2>&1 | { grep -v -E 'warning: (Git tree .* is dirty|updating lock file)' || true; }
 
