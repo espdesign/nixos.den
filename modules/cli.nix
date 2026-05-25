@@ -19,6 +19,9 @@
             wget
             curl
             btop
+            # --- Treesitter Dependencies ---
+            tree-sitter
+            gcc
           ];
           programs.neovim = {
             enable = true;
@@ -27,6 +30,9 @@
             withRuby = false;
             withPython3 = false;
           };
+
+          # Symlink Neovim init.lua selectively, leaving ~/.config/nvim writable
+          xdg.configFile."nvim/init.lua".source = ./assets/nvim/init.lua;
 
           programs.zsh = {
             enable = true;
