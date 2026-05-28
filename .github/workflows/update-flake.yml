@@ -69,6 +69,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+
       - name: Download updated flake.lock
         uses: actions/download-artifact@v8
         with:
