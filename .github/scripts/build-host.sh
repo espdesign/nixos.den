@@ -29,8 +29,26 @@ else
   echo "--- End build log ---"
 fi
 
-# Extract all warnings and traces from the entire log file to highlight and output them
-warnings="$(grep -i -E '(warning|trace|evaluation warning):' "$log_file" | sed 's/`//g' | sed -E 's/^([[:space:]]*(warning|trace|evaluation warning):)/⚠️ \1/I' || true)"
+# Extract all warnings and traces from the entire log file to highlight and output them (handles multi-line warnings)
+warnings="$(awk '
+  /^[[:space:]]*(warning|trace|evaluation warning|error):/ {
+    in_warning = 1
+    line = $0
+    gsub(/`/, "", line)
+    sub(/^[[:space:]]*(warning|trace|evaluation warning|error):/, "⚠️ &", line)
+    print line
+    next
+  }
+  /^[[:space:]]*(copying path|building|these [0-9]+ derivation|fetching path|downloading|evaluating|querying)/ || /^[[:space:]]+\/nix\/store\/.*\.drv$/ {
+    in_warning = 0
+  }
+  in_warning {
+    line = $0
+    gsub(/`/, "", line)
+    print line
+  }
+' "$log_file" || true)"
+
 
 # Output warnings to the console so they exist in the step's build log
 if [ -n "$warnings" ]; then
