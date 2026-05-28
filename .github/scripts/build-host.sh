@@ -12,7 +12,7 @@ fi
 echo "Building ${host} (${attr})..."
 log_file="$(mktemp)"
 
-if nix build "$attr" --no-link > "$log_file" 2>&1; then
+if nix build "$attr" --no-link --option warn-dirty false > "$log_file" 2>&1; then
   if [ -n "${GITHUB_OUTPUT:-}" ]; then
     echo "status=success" >> "$GITHUB_OUTPUT"
   else
