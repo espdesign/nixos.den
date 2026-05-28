@@ -11,8 +11,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-nix
-        with:
-          github-token: '${{ github.token }}'
       - name: Flake Check
         run: ./.github/scripts/flake-check.sh
       - name: Lint Check

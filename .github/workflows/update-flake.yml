@@ -19,7 +19,7 @@ jobs:
       - uses: ./.github/actions/setup-nix
         with:
           cachix-auth-token: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-          github-token: '${{ secrets.FLAKE_UPDATE_TOKEN || github.token }}'
+          github-token: '${{ secrets.FLAKE_UPDATE_TOKEN }}'
 
       - name: Update flake.lock
         env:
@@ -91,7 +91,7 @@ jobs:
       - uses: ./.github/actions/setup-nix
         with:
           cachix-auth-token: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-          github-token: '${{ secrets.FLAKE_UPDATE_TOKEN || github.token }}'
+          github-token: '${{ secrets.FLAKE_UPDATE_TOKEN }}'
 
       - uses: ./.github/actions/build-host
         id: build
