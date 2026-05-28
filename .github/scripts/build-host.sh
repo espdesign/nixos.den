@@ -29,8 +29,29 @@ else
   echo "--- End build log ---"
 fi
 
+# Extract all warnings and traces from the entire log file to highlight and output them
+warnings="$(grep -i -E '(warning|trace|evaluation warning):' "$log_file" | sed 's/`//g' | sed -E 's/^([[:space:]]*(warning|trace|evaluation warning):)/⚠️ \1/I' || true)"
+
+# Output warnings to the console so they exist in the step's build log
+if [ -n "$warnings" ]; then
+  echo "--- Evaluation/Build Warnings & Traces ---"
+  echo "$warnings"
+  echo "------------------------------------------"
+fi
+
 # Tail the last lines, strip backticks, and highlight warnings
-log_content="$(tail -n "$max_lines" "$log_file" | sed 's/`//g' | sed -E 's/^([[:space:]]*(warning|trace|evaluation warning):)/⚠️ \1/I')"
+tail_log="$(tail -n "$max_lines" "$log_file" | sed 's/`//g' | sed -E 's/^([[:space:]]*(warning|trace|evaluation warning):)/⚠️ \1/I')"
+
+# Prepend warnings to the captured log content if they exist
+if [ -n "$warnings" ]; then
+  log_content="⚠️ Evaluation/Build Warnings:
+$warnings
+
+--- Build Log Tail (last $max_lines lines) ---
+$tail_log"
+else
+  log_content="$tail_log"
+fi
 
 if [ -n "${GITHUB_OUTPUT:-}" ]; then
   delimiter="EOF_$(date +%s)_${host}"
