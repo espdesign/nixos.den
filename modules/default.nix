@@ -10,6 +10,7 @@
       den.aspects.ssh
     ];
     homeManager.home.stateVersion = "25.11";
+    homeManager.home.enableNixpkgsReleaseCheck = false;
     nixos = {
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
