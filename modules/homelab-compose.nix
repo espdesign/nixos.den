@@ -109,6 +109,7 @@
                 - WEBUI_PORT=8080
                 - QBITTORRENT__Advanced__NetworkInterface=tun0
                 - QBITTORRENT__Advanced__OptionalIPAddress=0.0.0.0
+                - QBITTORRENT__BitTorrent__Session\Interface=tun0
               volumes:
                 - /mnt/seagate14/data/config/qbittorrent:/config
                 - /mnt/seagate14/data:/data
