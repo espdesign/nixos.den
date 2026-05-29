@@ -6,9 +6,11 @@
       {
         networking.firewall.allowedTCPPorts = [
           32400 # Plex
+          8096  # Jellyfin
         ];
         networking.firewall.allowedUDPPorts = [
           32400 # Plex
+          8096  # Jellyfin
         ];
       };
 
@@ -57,6 +59,20 @@
                 - VERSION=docker
               volumes:
                 - /mnt/seagate14/data/config/plex:/config
+                - /mnt/seagate14/data/media:/data/media
+              restart: unless-stopped
+
+            jellyfin:
+              image: lscr.io/linuxserver/jellyfin:latest
+              container_name: jellyfin
+              environment:
+                - PUID=1000
+                - PGID=1000
+                - TZ=America/New_York
+              ports:
+                - 8096:8096
+              volumes:
+                - /mnt/seagate14/data/config/jellyfin:/config
                 - /mnt/seagate14/data/media:/data/media
               restart: unless-stopped
 
@@ -143,6 +159,34 @@
                 - 443:443
                 - 80:80
               restart: unless-stopped
+        '';
+        home.file."/mnt/seagate14/data/config/swag/nginx/proxy-confs/jellyfin.subdomain.conf".text = ''
+          server {
+              listen 443 ssl;
+              listen [::]:443 ssl;
+              server_name jellyfin.*;
+              include /config/nginx/ssl.conf;
+              client_max_body_size 0;
+              location / {
+                  include /config/nginx/proxy.conf;
+                  resolver 127.0.0.11 valid=30s;
+                  set $upstream_app jellyfin;
+                  set $upstream_port 8096;
+                  set $upstream_proto http;
+                  proxy_pass $upstream_proto://$upstream_app:$upstream_port;
+              }
+              location /socket {
+                  include /config/nginx/proxy.conf;
+                  resolver 127.0.0.11 valid=30s;
+                  set $upstream_app jellyfin;
+                  set $upstream_port 8096;
+                  set $upstream_proto http;
+                  proxy_pass $upstream_proto://$upstream_app:$upstream_port;
+                  proxy_http_version 1.1;
+                  proxy_set_header Upgrade $http_upgrade;
+                  proxy_set_header Connection "upgrade";
+              }
+          }
         '';
       };
   };
