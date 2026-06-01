@@ -9,11 +9,11 @@
 
         networking.firewall.allowedTCPPorts = [
           32400 # Plex
-          8096  # Jellyfin
+          8096 # Jellyfin
         ];
         networking.firewall.allowedUDPPorts = [
           32400 # Plex
-          8096  # Jellyfin
+          8096 # Jellyfin
         ];
       };
 
