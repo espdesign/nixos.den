@@ -130,12 +130,12 @@
                 - PGID=1000
                 - TZ=America/New_York
                 - WEBUI_PORT=8080
-                 - QBITTORRENT__Advanced__NetworkInterface=tun0
-                 - QBITTORRENT__Advanced__OptionalIPAddress=0.0.0.0
-                 - QBITTORRENT__BitTorrent__Session\Interface=tun0
-                 - QBITTORRENT__Network__Proxy\Profiles\BitTorrent=false
-                 - QBITTORRENT__Network__Proxy\Profiles\Misc=false
-                 - QBITTORRENT__Network__Proxy\Profiles\RSS=false
+                - QBITTORRENT__Advanced__NetworkInterface=tun0
+                - QBITTORRENT__Advanced__OptionalIPAddress=0.0.0.0
+                - QBITTORRENT__BitTorrent__Session\Interface=tun0
+                - QBITTORRENT__Network__Proxy\Profiles\BitTorrent=false
+                - QBITTORRENT__Network__Proxy\Profiles\Misc=false
+                - QBITTORRENT__Network__Proxy\Profiles\RSS=false
               volumes:
                 - /mnt/seagate14/data/config/qbittorrent:/config
                 - /mnt/seagate14/data:/data
