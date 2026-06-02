@@ -1,0 +1,34 @@
+commands:
+  share_limits: true
+  tag_update: true
+  skip_qb_version_check: true
+
+qbt:
+  host: "http://localhost:8080"
+  user: !ENV QBT_USER
+  pass: !ENV QBT_PASS
+
+directory:
+  root_dir: "/data"
+
+cat:
+  Uncategorized: "/data/*"
+
+tracker:
+  czteam.me:
+    tag: czteam
+
+share_limits:
+  strict_seeding:
+    priority: 1
+    include_all_tags:
+      - czteam
+    max_ratio: 1.0
+    max_time: 4320
+    strategy: last_no_matter_what
+    cleanup: true
+  default:
+    priority: 2
+    max_ratio: 0.0
+    strategy: last_no_matter_what
+    cleanup: true

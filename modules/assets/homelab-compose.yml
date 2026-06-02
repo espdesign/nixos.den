@@ -117,6 +117,23 @@ services:
       - /mnt/seagate14/data:/data
     restart: unless-stopped
 
+  qbit-manage:
+    image: ghcr.io/stuffanthings/qbit_manage:latest
+    container_name: qbit-manage
+    network_mode: "service:gluetun"
+    volumes:
+      - /mnt/seagate14/data/config/qbit-manage:/config
+      - @QBIT_MANAGE_CONFIG@:/config/config.yml:ro
+      - /mnt/seagate14/data:/data
+    env_file:
+      - /mnt/seagate14/data/config/qbit-manage/env
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - QBT_SCHEDULE=60
+    restart: unless-stopped
+
   seerr:
     image: ghcr.io/seerr-team/seerr:latest
     container_name: seerr
