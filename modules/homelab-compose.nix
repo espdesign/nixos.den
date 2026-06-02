@@ -168,6 +168,8 @@
               ports:
                 - 443:443
                 - 80:80
+              extra_hosts:
+                - "host.docker.internal:host-gateway"
               restart: unless-stopped
         '';
       };
