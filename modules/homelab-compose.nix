@@ -20,6 +20,10 @@
             8096 # Jellyfin
           ];
 
+          systemd.tmpfiles.rules = [
+            "d /mnt/seagate14/data/config/qbit-manage 0755 ${user.userName} users -"
+          ];
+
           systemd.services.homelab-compose-update = {
             description = "Update Homelab Containers";
             after = [ "docker.service" ];
