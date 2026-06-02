@@ -123,7 +123,6 @@ services:
     network_mode: "service:gluetun"
     volumes:
       - /mnt/seagate14/data/config/qbit-manage:/config
-      - @QBIT_MANAGE_CONFIG@:/config_template/config.yml:ro
       - /mnt/seagate14/data:/data
     env_file:
       - /mnt/seagate14/data/config/qbit-manage/env
@@ -132,13 +131,6 @@ services:
       - PGID=1000
       - TZ=America/New_York
       - QBT_SCHEDULE=60
-    entrypoint:
-      - /bin/bash
-      - -c
-      - |
-        cp -f /config_template/config.yml /config/config.yml
-        chown "$${PUID:-1000}:$${PGID:-1000}" /config/config.yml
-        exec /sbin/tini -s /app/entrypoint.sh python3 qbit_manage.py
     restart: unless-stopped
 
   seerr:

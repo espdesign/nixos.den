@@ -52,12 +52,10 @@
         };
 
       homeManager =
-        { lib, ... }:
+        { ... }:
         {
           # /mnt/seagate14/data
-          home.file."docker-compose.yml".text =
-            lib.replaceStrings [ "@QBIT_MANAGE_CONFIG@" ] [ "${./assets/qbit-manage-config.yml}" ]
-              (builtins.readFile ./assets/homelab-compose.yml);
+          home.file."docker-compose.yml".source = ./assets/homelab-compose.yml;
         };
     };
 }
