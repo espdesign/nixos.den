@@ -24,7 +24,18 @@
 
       #static domain names
       networking.hosts = {
-        "192.168.1.201" = [ "valako" ];
+        "192.168.1.201" = [
+          "valako"
+          "evansp.com"
+          "www.evansp.com"
+          "seerr.evansp.com"
+          "jellyfin.evansp.com"
+          "qbit.evansp.com"
+          "sonarr.evansp.com"
+          "radarr.evansp.com"
+          "prowlarr.evansp.com"
+          "plex.evansp.com"
+        ];
         "192.168.1.202" = [ "kitava" ];
       };
 
