@@ -8,6 +8,7 @@
     includes = [
       den.provides.hostname
       den.aspects.hardened-server
+      den.aspects.ryslog
     ];
     provides.to-users.includes = [
       den.aspects.syncthing
