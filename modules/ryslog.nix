@@ -4,7 +4,7 @@
     nixos =
       { ... }:
       {
-        services.rsyslog = {
+        services.rsyslogd = {
           enable = true;
           extraConfig = ''
             module(load="imudp")
