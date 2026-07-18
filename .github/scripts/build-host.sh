@@ -29,46 +29,20 @@ else
   echo "--- End build log ---"
 fi
 
-# Extract all warnings and traces from the entire log file to highlight and output them (handles multi-line warnings)
-warnings="$(awk '
-  /^[[:space:]]*(warning|trace|evaluation warning|error):/ {
-    in_warning = 1
-    line = $0
-    gsub(/`/, "", line)
-    sub(/^[[:space:]]*(warning|trace|evaluation warning|error):/, "⚠️ &", line)
-    print line
-    next
-  }
-  /^[[:space:]]*(copying path|building|these [0-9]+ derivation|fetching path|downloading|evaluating|querying)/ || /^[[:space:]]+\/nix\/store\/.*\.drv$/ {
-    in_warning = 0
-  }
-  in_warning {
-    line = $0
-    gsub(/`/, "", line)
-    print line
-  }
-' "$log_file" || true)"
-
-
-# Output warnings to the console so they exist in the step's build log
-if [ -n "$warnings" ]; then
-  echo "--- Evaluation/Build Warnings & Traces ---"
-  echo "$warnings"
-  echo "------------------------------------------"
+# Print warnings and traces in their raw form to the console so problem matchers can annotate them
+if grep -q -i -E "(warning|trace|evaluation warning|error):" "$log_file"; then
+  echo "--- Build Warnings & Traces ---"
+  grep -i -E "(warning|trace|evaluation warning|error):" "$log_file" || true
+  echo "-------------------------------"
 fi
 
-# Tail the last lines, strip backticks, and highlight warnings
-tail_log="$(tail -n "$max_lines" "$log_file" | sed 's/`//g' | sed -E 's/^([[:space:]]*(warning|trace|evaluation warning):)/⚠️ \1/I')"
+# Tail the last lines and strip backticks to prevent breaking markdown
+log_content="$(tail -n "$max_lines" "$log_file" | sed 's/`//g')"
 
-# Prepend warnings to the captured log content if they exist
-if [ -n "$warnings" ]; then
-  log_content="⚠️ Evaluation/Build Warnings:
-$warnings
-
---- Build Log Tail (last $max_lines lines) ---
-$tail_log"
-else
-  log_content="$tail_log"
+# Ensure the log content size doesn't exceed a safe threshold for the PR body (e.g. 15,000 characters)
+if [ ${#log_content} -gt 15000 ]; then
+  log_content="... (truncated to fit PR body limit) ...
+${log_content: -15000}"
 fi
 
 if [ -n "${GITHUB_OUTPUT:-}" ]; then
@@ -79,7 +53,7 @@ if [ -n "${GITHUB_OUTPUT:-}" ]; then
     echo "${delimiter}"
   } >> "$GITHUB_OUTPUT"
 else
-  echo "--- Sanitized Log ---"
+  echo "--- Sanitized Log Tail ---"
   echo "$log_content"
 fi
 

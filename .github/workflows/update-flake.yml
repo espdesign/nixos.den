@@ -150,6 +150,11 @@ jobs:
       - name: Build Summary
         run: .github/scripts/build-summary.sh '${{ needs.list-hosts.outputs.hosts }}'
 
+      - name: Get current time (EST)
+        id: time
+        run: |
+          echo "formatted-time=$(TZ="America/New_York" date "+%A, %b %d, %Y, %I:%M %p %Z")" >> "$GITHUB_OUTPUT"
+
       - name: Clean up temporary files
         run: rm -rf build-results temp-flake
 
@@ -167,6 +172,8 @@ jobs:
           title: "chore(deps): update flake.lock"
           body: |
             Automated flake update and host build verification.
+
+            **Last Updated:** ${{ steps.time.outputs.formatted-time }}
 
             ### Build Status
             ${{ steps.status.outputs.host-status }}
