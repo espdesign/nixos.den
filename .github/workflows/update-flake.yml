@@ -2,7 +2,14 @@ name: Update Flake
 on:
   schedule:
     - cron: '0 0 * * *' # Daily at midnight
-  workflow_dispatch: # Allow manual trigger
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   update:
