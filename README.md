@@ -36,3 +36,5 @@ nix run .#vm
 
 - [Den docs](https://den.oeiuwq.com/) | [Source](https://github.com/vic/den)
 - [Dendritic pattern](https://github.com/mightyiam/dendritic)
+
+# den.aspects ;)
