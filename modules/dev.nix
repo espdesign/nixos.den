@@ -26,6 +26,7 @@
             # --- Dev Servers ---
             package-version-server
             dockerfile-language-server
+            sentry-cli
           ];
           programs.vscodium = {
             enable = true;
