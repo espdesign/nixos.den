@@ -8,7 +8,6 @@
         {
           home.packages = with pkgs; [
             opencode
-            gemini-cli
             devenv
             # --- Common Utils ---
             ripgrep
