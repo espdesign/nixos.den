@@ -1,13 +1,20 @@
-{ ... }:
+{ den, ... }:
 {
   den.aspects.cli =
     { user, host, ... }:
     {
+      includes = [
+        (den.provides.unfree [
+          "claude-code"
+        ])
+      ];
+
       homeManager =
         { pkgs, ... }:
         {
           home.packages = with pkgs; [
             opencode
+            claude-code
             devenv
             # --- Common Utils ---
             ripgrep
