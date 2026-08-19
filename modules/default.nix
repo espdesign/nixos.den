@@ -34,7 +34,6 @@
           "sonarr.evansp.com"
           "radarr.evansp.com"
           "prowlarr.evansp.com"
-          "plex.evansp.com"
         ];
         "192.168.1.202" = [ "kitava" ];
       };

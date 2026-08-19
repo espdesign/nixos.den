@@ -28,19 +28,6 @@ services:
       - FIREWALL_OUTBOUND_SUBNETS=172.16.0.0/12,192.168.0.0/16
     restart: unless-stopped
 
-  plex:
-    image: lscr.io/linuxserver/plex:latest
-    container_name: plex
-    network_mode: host
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - VERSION=docker
-    volumes:
-      - /mnt/seagate14/data/config/plex:/config
-      - /mnt/seagate14/data/media:/data/media
-    restart: unless-stopped
-
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest
     container_name: jellyfin

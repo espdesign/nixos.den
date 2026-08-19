@@ -12,11 +12,9 @@
           networking.firewall.allowedTCPPorts = [
             80 # HTTP (SWAG)
             443 # HTTPS (SWAG)
-            32400 # Plex
             8096 # Jellyfin
           ];
           networking.firewall.allowedUDPPorts = [
-            32400 # Plex
             8096 # Jellyfin
           ];
 
