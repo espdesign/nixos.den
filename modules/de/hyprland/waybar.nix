@@ -27,9 +27,9 @@
                 };
 
                 network = {
-                  format-wifi = "{essid} ";
-                  format-ethernet = "{ifname} ";
-                  format-disconnected = "Disconnected ⚠";
+                  format-wifi = "{essid} 󰤨";
+                  format-ethernet = "Ethernet 󰈀";
+                  format-disconnected = "Disconnected 󰤮";
                 };
 
                 pulseaudio = {
