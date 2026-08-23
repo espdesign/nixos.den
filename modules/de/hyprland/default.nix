@@ -58,9 +58,6 @@
 
       homeManager =
         { pkgs, ... }:
-        let
-          mod = "SUPER";
-        in
         {
           # Packages needed for Wayland environment and management
           home.packages = with pkgs; [
