@@ -54,7 +54,7 @@
 
               #workspaces {
                 background: #2d2a2e;
-                border: 2px solid #ab9df2;
+                border: 2px solid #727072;
                 border-radius: 12px;
                 margin: 5px;
                 padding: 0 8px;
@@ -64,54 +64,58 @@
                 padding: 0 4px;
               }
               #workspaces button.active {
-                color: #ab9df2;
+                color: #ab9df2; /* Monokai Lavender for active workspace */
               }
               #workspaces button.urgent {
-                color: #ff6188;
+                color: #ff6188; /* Monokai Pink for urgent */
               }
 
               #clock {
                 background: #2d2a2e;
-                border: 2px solid #ff6188;
+                border: 2px solid #727072;
                 border-radius: 12px;
                 margin: 5px;
                 padding: 0 12px;
-                color: #ff6188;
+                color: #fcfcfa;
               }
 
               #pulseaudio {
                 background: #2d2a2e;
-                border: 2px solid #a9dc76;
+                border: 2px solid #727072;
                 border-radius: 12px;
                 margin: 5px;
                 padding: 0 12px;
-                color: #a9dc76;
+                color: #fcfcfa;
+              }
+              #pulseaudio.muted {
+                color: #727072;
+                border-color: #403e41;
               }
 
               #battery {
                 background: #2d2a2e;
-                border: 2px solid #fc9867;
+                border: 2px solid #727072;
                 border-radius: 12px;
                 margin: 5px;
                 padding: 0 12px;
-                color: #fc9867;
+                color: #fcfcfa;
               }
               #battery.charging {
-                color: #a9dc76;
+                color: #a9dc76; /* Monokai Green for charging */
                 border-color: #a9dc76;
               }
               #battery.warning:not(.charging) {
-                color: #ffd866;
+                color: #ffd866; /* Monokai Yellow for warning */
                 border-color: #ffd866;
               }
               #battery.critical:not(.charging) {
-                color: #ff6188;
+                color: #ff6188; /* Monokai Pink/Red for critical */
                 border-color: #ff6188;
               }
 
               #tray {
                 background: #2d2a2e;
-                border: 2px solid #ffd866;
+                border: 2px solid #727072;
                 border-radius: 12px;
                 margin: 5px;
                 padding: 0 12px;
