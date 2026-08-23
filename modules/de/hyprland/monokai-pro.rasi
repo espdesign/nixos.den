@@ -3,10 +3,10 @@
     background-color:            transparent;
     text-color:                  #fcfcfa;
     border-color:                #727072;
-    separatorcolor:              #ff6188;
+    separatorcolor:              #403e41;
     
-    selected-normal-background:  #ffd866;
-    selected-normal-foreground:  #2d2a2e;
+    selected-normal-background:  #403e41;
+    selected-normal-foreground:  #fcfcfa;
     
     normal-background:           transparent;
     normal-foreground:           #fcfcfa;
@@ -19,7 +19,7 @@ window {
     background-color: @background;
     border:           2;
     border-radius:    10;
-    border-color:     #ff6188;
+    border-color:     #727072;
     padding:          15;
     width:            35%;
 }
