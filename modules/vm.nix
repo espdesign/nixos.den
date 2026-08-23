@@ -36,6 +36,9 @@
     nixos.virtualisation.vmVariant = {
       virtualisation.memorySize = 2048;
       virtualisation.cores = 2;
+      virtualisation.forwardPorts = [
+        { from = "host"; host.port = 2222; guest.port = 22; }
+      ];
     };
   };
 

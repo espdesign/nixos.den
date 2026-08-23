@@ -14,7 +14,8 @@
       { ... }:
       {
         users.users.espdesign = {
-          initialHashedPassword = "$6$kk8o25Zeru3ZiUyL$zoRQ7si4zE2As8pL6D96w/VLktcIF7Zg1Ovn976JitlkQ68LiXKneJ/vMGGR7DAowq7sXqRGQVHRkq2rQ5MTU1";
+          initialHashedPassword = "$6$.RsSG5NHxmaVau/P$VkymnLbhoKuEujZCWmp5vDBOby4./c4QxqGMW8VGrOnRt139YUxb7BTv3zSRkrJgBPi8Hn5lZ2NYA0L4l6zeJ.";
+          extraGroups = [ "kvm" ];
           openssh.authorizedKeys.keys = [
             "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBVT8QAQNC1TJROywn6DfVEbRmcuTjVlKBar+4OOZZ1S"
           ];

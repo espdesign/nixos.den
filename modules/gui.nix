@@ -42,7 +42,7 @@
             enable = true;
 
             settings = {
-              theme = "dark:Gruvbox Dark,light:Gruvbox Light";
+              theme = "Monokai Pro";
               window-decoration = "auto";
               background-opacity = 0.95;
               background-blur = true;

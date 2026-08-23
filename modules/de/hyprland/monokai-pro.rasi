@@ -1,0 +1,124 @@
+* {
+    background:                  #2d2a2e;
+    background-color:            transparent;
+    text-color:                  #fcfcfa;
+    border-color:                #727072;
+    separatorcolor:              #ff6188;
+    
+    selected-normal-background:  #ffd866;
+    selected-normal-foreground:  #2d2a2e;
+    
+    normal-background:           transparent;
+    normal-foreground:           #fcfcfa;
+    
+    alternate-normal-background: transparent;
+    alternate-normal-foreground: #fcfcfa;
+}
+
+window {
+    background-color: @background;
+    border:           2;
+    border-radius:    10;
+    border-color:     #ff6188;
+    padding:          15;
+    width:            35%;
+}
+
+mainbox {
+    border:  0;
+    padding: 0;
+}
+
+message {
+    border:       2px 0px 0px;
+    border-color: @separatorcolor;
+    padding:      1px;
+}
+
+textbox {
+    text-color: @normal-foreground;
+}
+
+listview {
+    fixed-height: 0;
+    border:       2px 0px 0px;
+    border-color: @separatorcolor;
+    spacing:      4px;
+    scrollbar:    false;
+    padding:      10px 0px 0px;
+}
+
+element {
+    border:        0;
+    padding:       5px;
+    border-radius: 6;
+}
+
+element normal.normal {
+    background-color: @normal-background;
+    text-color:       @normal-foreground;
+}
+
+element normal.urgent {
+    background-color: @normal-background;
+    text-color:       #ff6188;
+}
+
+element normal.active {
+    background-color: @normal-background;
+    text-color:       #a9dc76;
+}
+
+element selected.normal {
+    background-color: @selected-normal-background;
+    text-color:       @selected-normal-foreground;
+}
+
+element selected.urgent {
+    background-color: #ff6188;
+    text-color:       @selected-normal-foreground;
+}
+
+element selected.active {
+    background-color: #a9dc76;
+    text-color:       @selected-normal-foreground;
+}
+
+element alternate.normal {
+    background-color: @alternate-normal-background;
+    text-color:       @alternate-normal-foreground;
+}
+
+element alternate.active {
+    background-color: @alternate-normal-background;
+    text-color:       #a9dc76;
+}
+
+element alternate.urgent {
+    background-color: @alternate-normal-background;
+    text-color:       #ff6188;
+}
+
+inputbar {
+    spacing:    0;
+    text-color: @normal-foreground;
+    padding:    1px;
+    children:   [ prompt, textbox-prompt-colon, entry, case-indicator ];
+}
+
+prompt {
+    spacing:    0;
+    text-color: #ff6188;
+}
+
+entry {
+    spacing:    0;
+    text-color: @normal-foreground;
+}
+
+textbox-prompt-colon {
+    expand:     false;
+    str:        ": ";
+    margin:     0px 0.3em 0em 0em;
+    text-color: #ff6188;
+}

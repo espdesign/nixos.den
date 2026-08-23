@@ -15,7 +15,7 @@
       den.aspects.syncthing
       den.aspects.gui
       den.aspects.dev
-      den.aspects.gnome
+      den.aspects.hyprland
       den.aspects.scripts
       den.aspects.pipewire-sound
       den.aspects.vm
