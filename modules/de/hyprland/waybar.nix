@@ -240,15 +240,22 @@
               #workspaces button {
                 color: #727072;
                 padding: 0 4px;
+                margin: 4px 2px;
+                border-radius: 8px;
+              }
+              #workspaces button.visible {
+                color: #fcfcfa; /* brighter than inactive gray: shown on a non-focused monitor */
               }
               #workspaces button.active {
-                color: #ab9df2; /* Monokai Lavender for active workspace */
+                color: #2d2a2e;
+                background: #fcfcfa; /* white, filled pill for the truly focused workspace */
               }
               #workspaces button.urgent {
                 color: #ff6188; /* Monokai Pink for urgent */
               }
               #workspaces button.special.active {
-                color: #ffd866; /* Monokai Yellow only while the scratchpad is open */
+                color: #2d2a2e;
+                background: #ffd866; /* Monokai Yellow, filled pill only while the scratchpad is open */
               }
 
               #window {
