@@ -23,6 +23,7 @@
       den.aspects.cups-print
       den.aspects.fonts
       den.aspects.virt-manager
+      den.aspects.rustdesk
     ];
     nixos =
       { pkgs, ... }:

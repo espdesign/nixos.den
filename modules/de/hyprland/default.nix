@@ -31,8 +31,14 @@
                   "--remember"
                   "--remember-user-session"
                   "--user-menu"
+                  "--user-menu-min-uid 1000"
+                  "--user-menu-max-uid 29999"
                   "--asterisks"
-                  "--theme 'border=red;text=gray;prompt=orange;time=yellow;action=red'"
+                  # Monokai Pro palette, matching waybar/dunst/hyprlock:
+                  # container/bg=#2d2a2e, text=#fcfcfa, greet(muted)=#727072,
+                  # border/action=Pink #ff6188, prompt=Orange #fc9867,
+                  # title/time=Yellow #ffd866, button=Green #a9dc76
+                  "--theme 'container=#2d2a2e;text=#fcfcfa;greet=#727072;border=#ff6188;action=#ff6188;prompt=#fc9867;input=#fcfcfa;title=#ffd866;time=#ffd866;button=#a9dc76'"
                   "--cmd start-hyprland"
                 ];
                 user = "greeter";
@@ -160,6 +166,8 @@
                   },
                   layout = "dwindle",
                   allow_tearing = false,
+                  resize_on_border = true,
+                  extend_border_grab_area = 15,
                 },
                 decoration = {
                   rounding = 6,
