@@ -15,7 +15,7 @@
                 height = 30;
                 modules-left = [ "hyprland/workspaces" ];
                 modules-center = [ "clock" ];
-                modules-right = [ "pulseaudio" "network" "battery" "tray" ];
+                modules-right = [ "pulseaudio" "battery" "tray" ];
 
                 clock = {
                   format = "{:%I:%M %p - %a, %b %d}";
@@ -24,12 +24,6 @@
                 battery = {
                   format = "{capacity}% {icon}";
                   format-icons = [ "" "" "" "" "" ];
-                };
-
-                network = {
-                  format-wifi = "{essid} 󰤨";
-                  format-ethernet = "Ethernet 󰈀";
-                  format-disconnected = "Disconnected 󰤮";
                 };
 
                 pulseaudio = {
@@ -92,15 +86,6 @@
                 margin: 5px;
                 padding: 0 12px;
                 color: #a9dc76;
-              }
-
-              #network {
-                background: #2d2a2e;
-                border: 2px solid #78dce8;
-                border-radius: 12px;
-                margin: 5px;
-                padding: 0 12px;
-                color: #78dce8;
               }
 
               #battery {
