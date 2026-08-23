@@ -196,6 +196,9 @@
                   disable_hyprland_logo = true,
                   disable_splash_rendering = true,
                 },
+                gestures = {
+                  workspace_swipe_cancel_ratio = 0.3,
+                },
               })
 
               -- Scratchpad: shrink it off the screen edges so it reads as a
@@ -211,6 +214,16 @@
                 fingers = 3,
                 direction = "horizontal",
                 action = "workspace"
+              })
+              -- Plain function action fires once on gesture release with no
+              -- distance/cancel-ratio check (unlike action = "special"), so it
+              -- toggles instantly and never cancels partway through the swipe.
+              hl.gesture({
+                fingers = 3,
+                direction = "up",
+                action = function()
+                  hl.dispatch(hl.dsp.workspace.toggle_special("scratchpad"))
+                end
               })
 
               -- Startup applications
@@ -228,6 +241,7 @@
 
               -- Applications & Utilities
               hl.bind(mainMod .. " + return", hl.dsp.exec_cmd("ghostty"))
+              hl.bind(mainMod .. " + SHIFT + B", hl.dsp.exec_cmd("firefox"))
               hl.bind(mainMod .. " + D", hl.dsp.exec_cmd("rofi -show drun"))
               hl.bind(mainMod .. " + Q", hl.dsp.window.close())
               hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exit())
