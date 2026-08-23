@@ -109,8 +109,8 @@
               -- System config settings
               hl.config({
                 general = {
-                  gaps_in = 5,
-                  gaps_out = 10,
+                  gaps_in = 3,
+                  gaps_out = 4,
                   border_size = 2,
                   col = {
                     active_border = {
@@ -123,7 +123,7 @@
                   allow_tearing = false,
                 },
                 decoration = {
-                  rounding = 10,
+                  rounding = 6,
                   active_opacity = 1.0,
                   inactive_opacity = 1.0,
                   shadow = {
