@@ -71,7 +71,8 @@
                 modules-center = [ "clock" ];
                 modules-right = [
                   "idle_inhibitor"
-                  "group/hardware"
+                  "cpu"
+                  "memory"
                   "network"
                   "bluetooth"
                   "pulseaudio"
@@ -121,22 +122,8 @@
                   tooltip = true;
                 };
 
-                "group/hardware" = {
-                  orientation = "horizontal";
-                  drawer = {
-                    transition-duration = 300;
-                    children-class = "hardware-child";
-                    transition-left-to-right = true;
-                  };
-                  modules = [
-                    "cpu"
-                    "memory"
-                    "disk"
-                  ];
-                };
-
                 cpu = {
-                  format = " {usage}%";
+                  format = "CPU {usage}%";
                   tooltip = true;
                   interval = 5;
                   states = {
@@ -146,21 +133,11 @@
                 };
 
                 memory = {
-                  format = "󰍛 {used:0.1f}G";
+                  format = "MEM {used:0.1f}G";
                   tooltip-format = "{used:0.1f}GB used / {total:0.1f}GB total";
                   interval = 5;
                   states = {
                     warning = 70;
-                    critical = 90;
-                  };
-                };
-
-                disk = {
-                  format = "󰋊 {percentage_used}%";
-                  path = "/";
-                  interval = 30;
-                  tooltip-format = "{used} used / {total} on {path}";
-                  states = {
                     critical = 90;
                   };
                 };
@@ -309,38 +286,24 @@
                 border-color: #ffd866;
               }
 
-              #hardware {
+              #cpu,
+              #memory {
                 background: #2d2a2e;
                 border: 2px solid #727072;
                 border-radius: 12px;
                 margin: 5px;
-                padding: 0 4px;
-              }
-              #cpu,
-              #memory,
-              #disk {
-                background: transparent;
-                border: none;
-                margin: 0;
-                padding: 0 8px;
-              }
-              #cpu,
-              #memory {
-                color: #a9dc76; /* Monokai Green: usage is low, nothing to flag */
+                padding: 0 12px;
+                color: #fcfcfa; /* usage is low, nothing to flag */
               }
               #cpu.warning,
               #memory.warning {
                 color: #fc9867; /* Monokai Orange: usage is elevated */
+                border-color: #fc9867;
               }
               #cpu.critical,
               #memory.critical {
                 color: #ff6188; /* Monokai Pink/Red: usage is critical */
-              }
-              #disk {
-                color: #fcfcfa; /* free space is fine, nothing to communicate */
-              }
-              #disk.critical {
-                color: #ff6188; /* Monokai Pink/Red: almost full */
+                border-color: #ff6188;
               }
 
               #network {
