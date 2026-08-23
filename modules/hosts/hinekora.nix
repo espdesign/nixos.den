@@ -32,6 +32,12 @@
           inputs.nixos-hardware.nixosModules.framework-12th-gen-intel
         ]; # (8)
 
+        # nixos-hardware's framework module defaults to TLP, but it conflicts
+        # with power-profiles-daemon (used by waybar for click-to-switch
+        # power mode), so swap to power-profiles-daemon here.
+        services.tlp.enable = lib.mkForce false;
+        services.power-profiles-daemon.enable = true;
+
         environment.systemPackages = with pkgs; [ ];
       };
   };

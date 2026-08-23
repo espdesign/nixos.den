@@ -65,13 +65,14 @@
           # Packages needed for Wayland environment and management
           home.packages = with pkgs; [
             wl-clipboard
-            grimblast                # Screen capture
-            networkmanagerapplet    # nm-applet tray
-            pavucontrol             # GUI Audio control
-            brightnessctl           # Brightness controls
-            nautilus                # Graphical File Manager
-            hyprpolkitagent         # Official Hyprland Polkit Agent
-            hyprpaper               # Wallpaper utility
+            grimblast # Screen capture
+            networkmanagerapplet # nm-applet tray
+            pavucontrol # GUI Audio control
+            brightnessctl # Brightness controls
+            nautilus # Graphical File Manager
+            hyprpolkitagent # Official Hyprland Polkit Agent
+            hyprpaper # Wallpaper utility
+            imv # Image preview/viewer
           ];
 
           home.pointerCursor = {
@@ -112,31 +113,36 @@
             configType = "lua";
             extraConfig = ''
               -- Monitor configuration
-              ${if host.hostName == "kitava" then ''
-              hl.monitor({
-                output = "DP-1",
-                mode = "preferred",
-                position = "0x0",
-                scale = 1
-              })
-              hl.monitor({
-                output = "HDMI-A-1",
-                mode = "preferred",
-                position = "1920x0",
-                scale = 1
-              })
+              ${
+                if host.hostName == "kitava" then
+                  ''
+                    hl.monitor({
+                      output = "DP-1",
+                      mode = "preferred",
+                      position = "0x0",
+                      scale = 1
+                    })
+                    hl.monitor({
+                      output = "HDMI-A-1",
+                      mode = "preferred",
+                      position = "1920x0",
+                      scale = 1
+                    })
 
-              -- Workspace monitor rules
-              hl.workspace_rule({ workspace = "1", monitor = "DP-1" })
-              hl.workspace_rule({ workspace = "2", monitor = "HDMI-A-1" })
-              '' else ''
-              hl.monitor({
-                output = "",
-                mode = "preferred",
-                position = "auto",
-                scale = 1
-              })
-              ''}
+                    -- Workspace monitor rules
+                    hl.workspace_rule({ workspace = "1", monitor = "DP-1" })
+                    hl.workspace_rule({ workspace = "2", monitor = "HDMI-A-1" })
+                  ''
+                else
+                  ''
+                    hl.monitor({
+                      output = "",
+                      mode = "preferred",
+                      position = "auto",
+                      scale = 1
+                    })
+                  ''
+              }
 
               -- System config settings
               hl.config({
@@ -162,6 +168,7 @@
                   rounding = 6,
                   active_opacity = 1.0,
                   inactive_opacity = 1.0,
+                  dim_special = 0.6,
                   shadow = {
                     enabled = true,
                     range = 4,
@@ -194,6 +201,14 @@
                 },
               })
 
+              -- Scratchpad: shrink it off the screen edges so it reads as a
+              -- floating overlay instead of a fullscreen tile, and dim
+              -- everything behind it (decoration.dim_special above).
+              hl.workspace_rule({
+                workspace = "special:scratchpad",
+                gaps_out = { top = 80, right = 200, bottom = 80, left = 200 },
+              })
+
               -- Gestures configuration
               hl.gesture({
                 fingers = 3,
@@ -218,7 +233,7 @@
               hl.bind(mainMod .. " + return", hl.dsp.exec_cmd("ghostty"))
               hl.bind(mainMod .. " + D", hl.dsp.exec_cmd("rofi -show drun"))
               hl.bind(mainMod .. " + Q", hl.dsp.window.close())
-              hl.bind(mainMod .. " + M", hl.dsp.exit())
+              hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exit())
               hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
               hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({ action = "toggle" }))
 
@@ -231,14 +246,37 @@
               hl.bind(mainMod .. " + k", hl.dsp.focus({ direction = "u" }))
               hl.bind(mainMod .. " + j", hl.dsp.focus({ direction = "d" }))
 
+              -- Window swap (move the window itself, not just focus)
+              hl.bind(mainMod .. " + SHIFT + left", hl.dsp.window.swap({ direction = "l" }))
+              hl.bind(mainMod .. " + SHIFT + right", hl.dsp.window.swap({ direction = "r" }))
+              hl.bind(mainMod .. " + SHIFT + up", hl.dsp.window.swap({ direction = "u" }))
+              hl.bind(mainMod .. " + SHIFT + down", hl.dsp.window.swap({ direction = "d" }))
+
+              -- Mouse move/resize
+              hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })
+              hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
+
               -- Workspaces Loop
               for i = 1, 9 do
                 hl.bind(mainMod .. " + " .. i, hl.dsp.focus({ workspace = tostring(i) }))
                 hl.bind(mainMod .. " + SHIFT + " .. i, hl.dsp.window.move({ workspace = tostring(i) }))
               end
 
+              -- Workspace cycling
+              hl.bind(mainMod .. " + tab", hl.dsp.focus({ workspace = "e+1" }))
+              hl.bind(mainMod .. " + SHIFT + tab", hl.dsp.focus({ workspace = "e-1" }))
+
+              -- Scratchpad
+              hl.bind(mainMod .. " + grave", hl.dsp.workspace.toggle_special("scratchpad"))
+              hl.bind(mainMod .. " + SHIFT + grave", hl.dsp.window.move({ workspace = "special:scratchpad", follow = false }))
+
+              -- Screenshots (grimblast)
+              hl.bind("Print", hl.dsp.exec_cmd("grimblast copy screen"))
+              hl.bind("SHIFT + Print", hl.dsp.exec_cmd("grimblast copy active"))
+              hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("grimblast copy area"))
+
               -- Volume controls (repeating & locked)
-              hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"), { repeating = true, locked = true })
+              hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+"), { repeating = true, locked = true })
               hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"), { repeating = true, locked = true })
               hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"), { locked = true })
 
