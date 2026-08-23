@@ -20,9 +20,14 @@
 
       homeManager =
         { pkgs, ... }:
+        let
+          vscodiumPkg = pkgs.vscodium.override {
+            commandLineArgs = "--password-store=gnome-libsecret";
+          };
+        in
         {
           home.packages = with pkgs; [
-            (pkgs.writeShellScriptBin "code" ''exec ${pkgs.vscodium}/bin/codium "$@"'')
+            (pkgs.writeShellScriptBin "code" ''exec ${vscodiumPkg}/bin/codium "$@"'')
             # --- Dev Servers ---
             package-version-server
             dockerfile-language-server
@@ -30,6 +35,7 @@
           ];
           programs.vscodium = {
             enable = true;
+            package = vscodiumPkg;
             profiles.default.extensions =
               with pkgs.vscode-extensions;
               [

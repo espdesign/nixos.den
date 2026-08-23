@@ -40,6 +40,10 @@
             };
           };
 
+          # Enable gnome-keyring and unlock it on login
+          services.gnome.gnome-keyring.enable = true;
+          security.pam.services.greetd.enableGnomeKeyring = true;
+
           # Hardware controls and monitoring
           hardware.bluetooth.enable = true;
           services.blueman.enable = true;
@@ -70,6 +74,15 @@
             hyprpaper               # Wallpaper utility
           ];
 
+          home.pointerCursor = {
+            enable = true;
+            package = pkgs.bibata-cursors;
+            name = "Bibata-Modern-Ice";
+            size = 24;
+            gtk.enable = true;
+            x11.enable = true;
+          };
+
           # GTK and Icon Theme for modern tray applets (like nm-applet)
           gtk = {
             enable = true;
@@ -99,15 +112,38 @@
             configType = "lua";
             extraConfig = ''
               -- Monitor configuration
+              ${if host.hostName == "kitava" then ''
+              hl.monitor({
+                output = "DP-1",
+                mode = "preferred",
+                position = "0x0",
+                scale = 1
+              })
+              hl.monitor({
+                output = "HDMI-A-1",
+                mode = "preferred",
+                position = "1920x0",
+                scale = 1
+              })
+
+              -- Workspace monitor rules
+              hl.workspace_rule({ workspace = "1", monitor = "DP-1" })
+              hl.workspace_rule({ workspace = "2", monitor = "HDMI-A-1" })
+              '' else ''
               hl.monitor({
                 output = "",
                 mode = "preferred",
                 position = "auto",
                 scale = 1
               })
+              ''}
 
               -- System config settings
               hl.config({
+                cursor = {
+                  inactive_timeout = 3,
+                  hide_on_key_press = true,
+                },
                 general = {
                   gaps_in = 3,
                   gaps_out = 4,
