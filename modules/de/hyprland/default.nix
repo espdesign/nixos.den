@@ -70,6 +70,20 @@
             hyprpaper               # Wallpaper utility
           ];
 
+          # GTK and Icon Theme for modern tray applets (like nm-applet)
+          gtk = {
+            enable = true;
+            theme = {
+              name = "Adwaita-dark";
+              package = pkgs.gnome-themes-extra;
+            };
+            iconTheme = {
+              name = "Papirus-Dark";
+              package = pkgs.papirus-icon-theme;
+            };
+            gtk4.theme = null;
+          };
+
           # Write wallpaper configuration manually for hyprpaper v0.8+ block syntax compatibility
           xdg.configFile."hypr/hyprpaper.conf".text = ''
             wallpaper {
