@@ -263,6 +263,7 @@
                 hl.exec_cmd("${pkgs.hyprpolkitagent}/libexec/hyprpolkitagent")
                 hl.exec_cmd("wl-paste --type text --watch cliphist store")
                 hl.exec_cmd("wl-paste --type image --watch cliphist store")
+                hl.exec_cmd("[workspace special:scratchpad silent] ghostty")
               end)
 
               -- Keybindings
