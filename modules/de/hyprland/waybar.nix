@@ -9,7 +9,7 @@
           # hinekora is a 13" HiDPI panel rendered at 1x (see monitor scale in
           # default.nix), so text/UI needs to be sized up manually to stay legible.
           isHiDPI = host.hostName == "hinekora";
-          fontSize = if isHiDPI then "16px" else "12px";
+          fontSize = if isHiDPI then "15px" else "12px";
           barHeight = if isHiDPI then 36 else 30;
 
           # Waybar's built-in battery module colors purely off upower's
@@ -109,7 +109,7 @@
                 };
 
                 clock = {
-                  format = "{:%I:%M %p - %a, %b %d}";
+                  format = "{:%a %b %d  %I:%M %p}";
                   tooltip-format = "<tt><small>{calendar}</small></tt>";
                 };
 
@@ -214,7 +214,7 @@
               };
             };
 
-            # Monokai Pro Modular Block CSS styling for Waybar
+            # GNOME-style Single Bar CSS styling for Waybar (sharp edges)
             style = ''
               * {
                 border: none;
@@ -226,194 +226,168 @@
               }
 
               window#waybar {
-                background: transparent;
+                background-color: #2d2a2e;
                 color: #fcfcfa;
+                border-bottom: 1px solid #403e41;
+              }
+
+              /* General module hover effect */
+              #workspaces button:hover,
+              #clock:hover,
+              #idle_inhibitor:hover,
+              #cpu:hover,
+              #memory:hover,
+              #network:hover,
+              #bluetooth:hover,
+              #pulseaudio:hover,
+              #power-profiles-daemon:hover,
+              #custom-battery:hover,
+              #tray:hover {
+                background: rgba(255, 255, 255, 0.1);
               }
 
               #workspaces {
-                background: #2d2a2e;
-                border: 2px solid #727072;
-                border-radius: 12px;
-                margin: 5px;
-                padding: 0 8px;
+                margin: 0 4px;
+                padding: 0 4px;
               }
               #workspaces button {
                 color: #727072;
-                padding: 0 4px;
-                margin: 4px 2px;
-                border-radius: 8px;
+                padding: 0 8px;
+                margin: 3px 2px;
+                transition: all 0.2s ease;
               }
               #workspaces button.visible {
                 color: #fcfcfa; /* brighter than inactive gray: shown on a non-focused monitor */
               }
               #workspaces button.active {
                 color: #2d2a2e;
-                background: #fcfcfa; /* white, filled pill for the truly focused workspace */
+                background: #fcfcfa; /* white, filled rectangular block for active workspace */
               }
               #workspaces button.urgent {
-                color: #ff6188; /* Monokai Pink for urgent */
+                color: #2d2a2e;
+                background: #ff6188; /* Monokai Pink for urgent */
               }
               #workspaces button.special.active {
                 color: #2d2a2e;
-                background: #ffd866; /* Monokai Yellow, filled pill only while the scratchpad is open */
+                background: #ffd866; /* Monokai Yellow while scratchpad is open */
               }
 
               #window {
-                background: transparent;
-                margin: 5px 5px 5px 0;
-                padding: 0 8px;
+                margin: 0;
+                padding: 0 12px;
                 color: #fcfcfa;
                 font-weight: normal;
                 font-style: italic;
               }
 
               #clock {
-                background: #2d2a2e;
-                border: 2px solid #727072;
-                border-radius: 12px;
-                margin: 5px;
+                margin: 3px 0;
                 padding: 0 12px;
                 color: #fcfcfa;
+                transition: all 0.2s ease;
               }
 
               #idle_inhibitor {
-                background: #2d2a2e;
-                border: 2px solid #727072;
-                border-radius: 12px;
-                margin: 5px;
-                /* the eye-slash glyph's ink nearly fills its full em-box,
-                   so at the base font-size it crosses over the pill's
-                   border instead of sitting inside it */
-                padding: 2px 16px 2px 10px;
-                font-size: 0.8em;
+                margin: 3px 2px;
+                padding: 0 10px;
+                font-size: 0.9em;
                 color: #727072;
+                transition: all 0.2s ease;
               }
               #idle_inhibitor.activated {
                 color: #ffd866; /* Monokai Yellow when sleep is inhibited */
-                border-color: #ffd866;
               }
 
               #cpu,
               #memory {
-                background: #2d2a2e;
-                border: 2px solid #727072;
-                border-radius: 12px;
-                margin: 5px;
-                padding: 0 12px;
+                margin: 3px 2px;
+                padding: 0 10px;
                 color: #fcfcfa; /* usage is low, nothing to flag */
+                transition: all 0.2s ease;
               }
               #cpu.warning,
               #memory.warning {
                 color: #fc9867; /* Monokai Orange: usage is elevated */
-                border-color: #fc9867;
               }
               #cpu.critical,
               #memory.critical {
                 color: #ff6188; /* Monokai Pink/Red: usage is critical */
-                border-color: #ff6188;
               }
 
               #network {
-                background: #2d2a2e;
-                border: 2px solid #727072;
-                border-radius: 12px;
-                margin: 5px;
-                padding: 0 12px;
-                color: #727072; /* disconnected: neutral, nothing is wrong, just idle */
+                margin: 3px 2px;
+                padding: 0 10px;
+                color: #727072; /* disconnected: neutral */
+                transition: all 0.2s ease;
               }
               #network.wifi,
               #network.ethernet {
                 color: #a9dc76; /* Monokai Green: connected */
-                border-color: #a9dc76;
               }
               #network.linked {
                 color: #fc9867; /* Monokai Orange: interface up but no IP */
-                border-color: #fc9867;
               }
 
               #bluetooth {
-                background: #2d2a2e;
-                border: 2px solid #727072;
-                border-radius: 12px;
-                margin: 5px;
-                padding: 0 12px;
+                margin: 3px 2px;
+                padding: 0 10px;
                 color: #727072; /* no devices connected: neutral */
+                transition: all 0.2s ease;
               }
               #bluetooth.connected {
                 color: #a9dc76; /* Monokai Green: device(s) connected */
-                border-color: #a9dc76;
               }
               #bluetooth.disabled,
               #bluetooth.off {
-                color: #403e41;
-                border-color: #403e41;
+                color: #59575a;
               }
 
               #pulseaudio {
-                background: #2d2a2e;
-                border: 2px solid #ff6188;
-                border-radius: 12px;
-                margin: 5px;
-                padding: 0 12px;
-                color: #ff6188; /* Monokai Pink/Red: base = loud (>=80%, no .quiet class applied) */
+                margin: 3px 2px;
+                padding: 0 10px;
+                color: #ff6188; /* Monokai Pink/Red: base = loud (>=80%) */
+                transition: all 0.2s ease;
               }
               #pulseaudio.quiet {
                 color: #fcfcfa; /* normal volume, 0-79% */
-                border-color: #727072;
               }
               #pulseaudio.muted {
                 color: #727072;
-                border-color: #403e41;
               }
 
               #power-profiles-daemon {
-                background: #2d2a2e;
-                border: 2px solid #727072;
-                border-radius: 12px;
-                margin: 5px;
-                padding: 0 16px 0 12px;
+                margin: 3px 2px;
+                padding: 0 10px;
                 color: #fcfcfa;
+                transition: all 0.2s ease;
               }
               #power-profiles-daemon.power-saver {
                 color: #a9dc76; /* Monokai Green: efficient, low draw */
-                border-color: #a9dc76;
               }
               #power-profiles-daemon.performance {
                 color: #ff6188; /* Monokai Pink/Red: max draw */
-                border-color: #ff6188;
               }
 
               #custom-battery {
-                background: #2d2a2e;
-                border: 2px solid #727072;
-                border-radius: 12px;
-                margin: 5px;
-                padding: 0 12px;
+                margin: 3px 2px;
+                padding: 0 10px;
                 color: #fcfcfa;
+                transition: all 0.2s ease;
               }
               #custom-battery.charging {
-                /* AC is connected - always green, even when the kernel
-                   reports "discharging" due to charge-conservation
-                   hysteresis (battery coasting down within its threshold
-                   band while still plugged in) */
                 color: #a9dc76; /* Monokai Green for charging */
-                border-color: #a9dc76;
               }
               #custom-battery.warning {
                 color: #ffd866; /* Monokai Yellow for warning */
-                border-color: #ffd866;
               }
               #custom-battery.critical {
                 color: #ff6188; /* Monokai Pink/Red for critical */
-                border-color: #ff6188;
               }
 
               #tray {
-                background: #2d2a2e;
-                border: 2px solid #727072;
-                border-radius: 12px;
-                margin: 5px;
-                padding: 0 12px;
+                margin: 3px 2px;
+                padding: 0 10px;
+                transition: all 0.2s ease;
               }
             '';
           };

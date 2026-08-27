@@ -170,7 +170,7 @@
                   extend_border_grab_area = 15,
                 },
                 decoration = {
-                  rounding = 6,
+                  rounding = 0,
                   active_opacity = 1.0,
                   inactive_opacity = 1.0,
                   dim_special = 0.6,
