@@ -257,7 +257,7 @@
                 hl.exec_cmd("hyprpaper")
                 hl.exec_cmd("waybar")
                 hl.exec_cmd("dunst")
-                hl.exec_cmd("swayosd-server")
+                hl.exec_cmd("swayosd-server --top-margin 0.15")
                 hl.exec_cmd("nm-applet --indicator")
                 hl.exec_cmd("blueman-applet")
                 hl.exec_cmd("${pkgs.hyprpolkitagent}/libexec/hyprpolkitagent")
@@ -271,7 +271,7 @@
               -- Applications & Utilities
               hl.bind(mainMod .. " + return", hl.dsp.exec_cmd("ghostty"))
               hl.bind(mainMod .. " + SHIFT + B", hl.dsp.exec_cmd("firefox"))
-              hl.bind(mainMod .. " + D", hl.dsp.exec_cmd("rofi -show drun"))
+              hl.bind(mainMod .. " + D", hl.dsp.exec_cmd("rofi -show combi"))
               hl.bind(mainMod .. " + Q", hl.dsp.window.close())
               hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exit())
               hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
