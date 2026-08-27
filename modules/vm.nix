@@ -53,9 +53,16 @@
       nixos =
         { config, lib, ... }:
         {
-          virtualisation.vmVariant = lib.mkIf config.services.displayManager.enable {
-            services.displayManager.autoLogin.enable = true;
-            services.displayManager.autoLogin.user = user.userName;
+          virtualisation.vmVariant = {
+            services.displayManager.autoLogin.enable = lib.mkIf config.services.displayManager.enable true;
+            services.displayManager.autoLogin.user = lib.mkIf config.services.displayManager.enable user.userName;
+
+            services.greetd.settings = lib.mkIf config.services.greetd.enable {
+              initial_session = {
+                command = "start-hyprland";
+                user = user.userName;
+              };
+            };
           };
         };
     };

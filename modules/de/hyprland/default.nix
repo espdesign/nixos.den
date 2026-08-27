@@ -55,6 +55,16 @@
           services.blueman.enable = true;
           services.upower.enable = true;
 
+          # XDG Portals for Wayland desktop integration
+          xdg.portal = {
+            enable = true;
+            extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+            config.common.default = [
+              "hyprland"
+              "gtk"
+            ];
+          };
+
           # Hint Electron apps to use Wayland
           environment.sessionVariables = {
             NIXOS_OZONE_WL = "1";
@@ -68,6 +78,9 @@
           # Packages needed for Wayland environment and management
           home.packages = with pkgs; [
             wl-clipboard
+            cliphist # Clipboard history manager
+            playerctl # Media player CLI control
+            wlsunset # Blue light / night light filter
             grimblast # Screen capture
             networkmanagerapplet # nm-applet tray
             pavucontrol # GUI Audio control
@@ -77,6 +90,13 @@
             hyprpaper # Wallpaper utility
             imv # Image preview/viewer
           ];
+
+          services.wlsunset = {
+            enable = true;
+            sunrise = "07:00";
+            sunset = "19:00";
+            temperature.night = 4000;
+          };
 
           home.pointerCursor = {
             enable = true;
@@ -241,7 +261,9 @@
                 hl.exec_cmd("dunst")
                 hl.exec_cmd("nm-applet --indicator")
                 hl.exec_cmd("blueman-applet")
-                hl.exec_cmd("systemctl --user start hyprpolkitagent")
+                hl.exec_cmd("${pkgs.hyprpolkitagent}/libexec/hyprpolkitagent")
+                hl.exec_cmd("wl-paste --type text --watch cliphist store")
+                hl.exec_cmd("wl-paste --type image --watch cliphist store")
               end)
 
               -- Keybindings
@@ -254,6 +276,7 @@
               hl.bind(mainMod .. " + Q", hl.dsp.window.close())
               hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exit())
               hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
+              hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("bash -c 'cliphist list | rofi -dmenu -p \"Clipboard\" | cliphist decode | wl-copy'"))
               hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({ action = "toggle" }))
 
               -- Lock screen
@@ -294,10 +317,17 @@
               hl.bind("SHIFT + Print", hl.dsp.exec_cmd("grimblast copy active"))
               hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("grimblast copy area"))
 
-              -- Volume controls (repeating & locked)
+              -- Volume & Microphone controls (repeating & locked)
               hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+"), { repeating = true, locked = true })
               hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"), { repeating = true, locked = true })
               hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"), { locked = true })
+              hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"), { locked = true })
+
+              -- Media playback controls (locked)
+              hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
+              hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { locked = true })
+              hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })
+              hl.bind("XF86AudioStop", hl.dsp.exec_cmd("playerctl stop"), { locked = true })
 
               -- Brightness controls (repeating & locked)
               hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightnessctl set 5%+"), { repeating = true, locked = true })
