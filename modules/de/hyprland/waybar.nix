@@ -214,7 +214,6 @@
               };
             };
 
-            # GNOME-style Single Bar CSS styling for Waybar (sharp edges)
             style = ''
               * {
                 border: none;
@@ -223,6 +222,7 @@
                 font-size: ${fontSize};
                 font-weight: bold;
                 min-height: 0;
+                min-width: 0;
               }
 
               window#waybar {
@@ -247,8 +247,8 @@
               }
 
               #workspaces {
-                margin: 0 4px;
-                padding: 0 4px;
+                margin: 0 4px 0 0;
+                padding: 0;
               }
               #workspaces button {
                 color: #727072;
@@ -289,10 +289,14 @@
 
               #idle_inhibitor {
                 margin: 3px 2px;
-                padding: 0 10px;
-                font-size: 0.9em;
+                padding: 0 14px 0 8px;
                 color: #727072;
                 transition: all 0.2s ease;
+              }
+              #idle_inhibitor label,
+              #power-profiles-daemon label {
+                margin: 0;
+                padding: 0;
               }
               #idle_inhibitor.activated {
                 color: #ffd866; /* Monokai Yellow when sleep is inhibited */
@@ -357,7 +361,7 @@
 
               #power-profiles-daemon {
                 margin: 3px 2px;
-                padding: 0 10px;
+                padding: 0 14px 0 8px;
                 color: #fcfcfa;
                 transition: all 0.2s ease;
               }

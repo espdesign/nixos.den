@@ -9,6 +9,7 @@
         den.aspects.hyprland.provides.dunst
         den.aspects.hyprland.provides.hyprlock
         den.aspects.hyprland.provides.hypridle
+        den.aspects.hyprland.provides.swayosd
       ];
 
       nixos =
@@ -178,10 +179,7 @@
                   gaps_out = 4,
                   border_size = 2,
                   col = {
-                    active_border = {
-                      colors = { "rgba(ff6188ee)", "rgba(ffd866ee)" },
-                      angle = 45
-                    },
+                    active_border = "rgba(a9dc76ee)",
                     inactive_border = "rgba(727072aa)",
                   },
                   layout = "dwindle",
@@ -259,6 +257,7 @@
                 hl.exec_cmd("hyprpaper")
                 hl.exec_cmd("waybar")
                 hl.exec_cmd("dunst")
+                hl.exec_cmd("swayosd-server")
                 hl.exec_cmd("nm-applet --indicator")
                 hl.exec_cmd("blueman-applet")
                 hl.exec_cmd("${pkgs.hyprpolkitagent}/libexec/hyprpolkitagent")
@@ -318,20 +317,20 @@
               hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("grimblast copy area"))
 
               -- Volume & Microphone controls (repeating & locked)
-              hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+"), { repeating = true, locked = true })
-              hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"), { repeating = true, locked = true })
-              hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"), { locked = true })
-              hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"), { locked = true })
+              hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("swayosd-client --output-volume raise"), { repeating = true, locked = true })
+              hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("swayosd-client --output-volume lower"), { repeating = true, locked = true })
+              hl.bind("XF86AudioMute", hl.dsp.exec_cmd("swayosd-client --output-volume mute-toggle"), { locked = true })
+              hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("swayosd-client --input-volume mute-toggle"), { locked = true })
 
               -- Media playback controls (locked)
-              hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
-              hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { locked = true })
-              hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })
-              hl.bind("XF86AudioStop", hl.dsp.exec_cmd("playerctl stop"), { locked = true })
+              hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("swayosd-client --playerctl play-pause"), { locked = true })
+              hl.bind("XF86AudioNext", hl.dsp.exec_cmd("swayosd-client --playerctl next"), { locked = true })
+              hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("swayosd-client --playerctl previous"), { locked = true })
+              hl.bind("XF86AudioStop", hl.dsp.exec_cmd("swayosd-client --playerctl stop"), { locked = true })
 
               -- Brightness controls (repeating & locked)
-              hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightnessctl set 5%+"), { repeating = true, locked = true })
-              hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl set 5%-"), { repeating = true, locked = true })
+              hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("swayosd-client --brightness raise"), { repeating = true, locked = true })
+              hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("swayosd-client --brightness lower"), { repeating = true, locked = true })
             '';
           };
         };
