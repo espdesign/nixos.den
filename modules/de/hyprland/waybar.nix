@@ -82,7 +82,7 @@
                 ];
 
                 "hyprland/workspaces" = {
-                  show-special = true;
+                  show-special = false;
                   format = "{icon}";
                   format-icons = {
                     "1" = "1";
@@ -94,7 +94,6 @@
                     "7" = "7";
                     "8" = "8";
                     "9" = "9";
-                    special = "󰐃";
                   };
                   on-scroll-up = "hyprctl dispatch workspace e-1";
                   on-scroll-down = "hyprctl dispatch workspace e+1";
@@ -266,10 +265,6 @@
               #workspaces button.urgent {
                 color: #2d2a2e;
                 background: #ff6188; /* Monokai Pink for urgent */
-              }
-              #workspaces button.special.active {
-                color: #2d2a2e;
-                background: #ffd866; /* Monokai Yellow while scratchpad is open */
               }
 
               #window {

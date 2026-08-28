@@ -227,33 +227,17 @@
                 },
               })
 
-              -- Scratchpad: shrink it off the screen edges so it reads as a
-              -- floating overlay instead of a fullscreen tile, and dim
-              -- everything behind it (decoration.dim_special above).
-              hl.workspace_rule({
-                workspace = "special:scratchpad",
-                gaps_out = { top = 80, right = 200, bottom = 80, left = 200 },
-              })
-
               -- Gestures configuration
               hl.gesture({
                 fingers = 3,
                 direction = "horizontal",
                 action = "workspace"
               })
-              -- Plain function action fires once on gesture release with no
-              -- distance/cancel-ratio check (unlike action = "special"), so it
-              -- toggles instantly and never cancels partway through the swipe.
-              hl.gesture({
-                fingers = 3,
-                direction = "up",
-                action = function()
-                  hl.dispatch(hl.dsp.workspace.toggle_special("scratchpad"))
-                end
-              })
 
               -- Startup applications
               hl.on("hyprland.start", function()
+                hl.exec_cmd("dbus-update-activation-environment --systemd --all")
+                hl.exec_cmd("gnome-keyring-daemon --start --components=secrets")
                 hl.exec_cmd("hyprpaper")
                 hl.exec_cmd("waybar")
                 hl.exec_cmd("dunst")
@@ -263,7 +247,6 @@
                 hl.exec_cmd("${pkgs.hyprpolkitagent}/libexec/hyprpolkitagent")
                 hl.exec_cmd("wl-paste --type text --watch cliphist store")
                 hl.exec_cmd("wl-paste --type image --watch cliphist store")
-                hl.exec_cmd("[workspace special:scratchpad silent] ghostty")
               end)
 
               -- Keybindings
@@ -307,10 +290,6 @@
               -- Workspace cycling
               hl.bind(mainMod .. " + tab", hl.dsp.focus({ workspace = "e+1" }))
               hl.bind(mainMod .. " + SHIFT + tab", hl.dsp.focus({ workspace = "e-1" }))
-
-              -- Scratchpad
-              hl.bind(mainMod .. " + grave", hl.dsp.workspace.toggle_special("scratchpad"))
-              hl.bind(mainMod .. " + SHIFT + grave", hl.dsp.window.move({ workspace = "special:scratchpad", follow = false }))
 
               -- Screenshots (grimblast)
               hl.bind("Print", hl.dsp.exec_cmd("grimblast copy screen"))
