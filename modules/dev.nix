@@ -1,15 +1,12 @@
-{ den, ... }:
+{ den, inputs, ... }:
+let
+  antigravity-ide = inputs.antigravity-nix.packages.x86_64-linux.google-antigravity-ide;
+in
 {
   den.aspects.dev =
-    {
-      user,
-      host,
-      inputs,
-      ...
-    }:
+    { user, host, ... }:
     {
       includes = [
-        den.batteries.flake-scope
         den.aspects.cli
         den.aspects.fonts
         den.aspects.docker
@@ -33,7 +30,7 @@
             package-version-server
             dockerfile-language-server
             sentry-cli
-            inputs.antigravity-nix.packages.${pkgs.system}.google-antigravity-ide
+            antigravity-ide
           ];
           programs.vscodium = {
             enable = true;
