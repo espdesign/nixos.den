@@ -1,9 +1,15 @@
 { den, ... }:
 {
   den.aspects.dev =
-    { user, host, ... }:
+    {
+      user,
+      host,
+      inputs,
+      ...
+    }:
     {
       includes = [
+        den.batteries.flake-scope
         den.aspects.cli
         den.aspects.fonts
         den.aspects.docker
@@ -27,6 +33,7 @@
             package-version-server
             dockerfile-language-server
             sentry-cli
+            inputs.antigravity-nix.packages.${pkgs.system}.google-antigravity-ide
           ];
           programs.vscodium = {
             enable = true;
