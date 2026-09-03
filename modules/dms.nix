@@ -4,8 +4,12 @@
     nixos =
       { pkgs, ... }:
       {
-        # Enable Niri Wayland compositor
-        programs.niri.enable = true;
+        # Enable Hyprland compositor with UWSM
+        programs.hyprland = {
+          enable = true;
+          withUWSM = true;
+          xwayland.enable = true;
+        };
 
         # Enable DankMaterialShell
         programs.dms-shell = {
@@ -25,17 +29,17 @@
           enableClipboardPaste = true;
         };
 
-        # Disable GDM, enable greetd with autologin into niri
+        # Disable GDM, enable greetd with autologin via start-hyprland
         services.displayManager.gdm.enable = false;
         services.greetd = {
           enable = true;
           settings = {
             default_session = {
-              command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --remember-user-session --cmd niri-session";
+              command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --remember-user-session --cmd start-hyprland";
               user = "greeter";
             };
             initial_session = {
-              command = "${pkgs.niri}/bin/niri-session";
+              command = "start-hyprland";
               user = "espdesign";
             };
           };
@@ -50,7 +54,7 @@
         xdg.portal = {
           enable = true;
           extraPortals = [
-            pkgs.xdg-desktop-portal-gnome
+            pkgs.xdg-desktop-portal-hyprland
             pkgs.xdg-desktop-portal-gtk
           ];
         };
@@ -75,163 +79,107 @@
       };
 
     homeManager =
-      { pkgs, ... }:
+      { ... }:
       {
-        # Niri configuration tailored for DankMaterialShell
-        xdg.configFile."niri/config.kdl".text = ''
-          environment {
-            XDG_CURRENT_DESKTOP "niri"
-            QT_QPA_PLATFORM "wayland"
-            ELECTRON_OZONE_PLATFORM_HINT "auto"
-            QT_QPA_PLATFORMTHEME "gtk3"
-            QT_QPA_PLATFORMTHEME_QT6 "gtk3"
-          }
+        # Hyprland Lua configuration tailored for DankMaterialShell
+        wayland.windowManager.hyprland = {
+          enable = true;
+          configType = "lua";
+          extraConfig = ''
+            hl.config({
+              cursor = {
+                inactive_timeout = 3,
+                hide_on_key_press = true,
+              },
+              general = {
+                gaps_in = 5,
+                gaps_out = 8,
+                border_size = 2,
+                col = {
+                  active_border = "rgba(7fc8ffff)",
+                  inactive_border = "rgba(505050ff)",
+                },
+                layout = "dwindle",
+              },
+              decoration = {
+                rounding = 12,
+                active_opacity = 1.0,
+                inactive_opacity = 0.95,
+              },
+              input = {
+                kb_layout = "us",
+                follow_mouse = 1,
+                touchpad = {
+                  natural_scroll = true,
+                },
+                sensitivity = 0,
+              },
+              misc = {
+                disable_hyprland_logo = true,
+                disable_splash_rendering = true,
+              },
+            })
 
-          spawn-at-startup "dms" "run"
+            -- DMS layer rules
+            hl.layer_rule({ match = { namespace = "^dms" }, no_anim = true })
 
-          input {
-            keyboard {
-              xkb {
-                layout "us"
-              }
-            }
-            touchpad {
-              tap
-              natural-scroll
-            }
-          }
+            -- Window rules
+            hl.window_rule({ match = { class = "^(org\\.quickshell)$" }, float = true })
+            hl.window_rule({ match = { class = "^(org\\.gnome\\.)" }, rounding = 12 })
 
-          layout {
-            gaps 8
-            center-focused-column "never"
-            preset-column-widths {
-              proportion 0.33333
-              proportion 0.5
-              proportion 0.66667
-            }
-            default-column-width { proportion 0.5; }
-            focus-ring {
-              off
-            }
-            border {
-              width 2
-              active-color "#7fc8ff"
-              inactive-color "#505050"
-            }
-          }
+            -- Startup applications
+            hl.on("hyprland.start", function()
+              hl.exec_cmd("wl-paste --type text --watch cliphist store")
+            end)
 
-          window-rule {
-            match app-id=r#"^org\.gnome\."#
-            draw-border-with-background false
-            geometry-corner-radius 12
-            clip-to-geometry true
-          }
+            -- Keybindings
+            local mainMod = "SUPER"
 
-          window-rule {
-            match is-active=false
-            opacity 0.95
-          }
+            -- Applications
+            hl.bind(mainMod .. " + return", hl.dsp.exec_cmd("ghostty"))
+            hl.bind(mainMod .. " + B", hl.dsp.exec_cmd("firefox"))
+            hl.bind(mainMod .. " + Q", hl.dsp.window.close())
+            hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exit())
 
-          window-rule {
-            geometry-corner-radius 12
-            clip-to-geometry true
-          }
+            -- DankMaterialShell IPC shortcuts
+            hl.bind(mainMod .. " + space", hl.dsp.exec_cmd("dms ipc call spotlight toggle"))
+            hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("dms ipc call clipboard toggle"))
+            hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("dms ipc call processlist focusOrToggle"))
+            hl.bind(mainMod .. " + comma", hl.dsp.exec_cmd("dms ipc call settings focusOrToggle"))
+            hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("dms ipc call notifications toggle"))
+            hl.bind(mainMod .. " + Y", hl.dsp.exec_cmd("dms ipc call dankdash wallpaper"))
+            hl.bind(mainMod .. " + ALT + L", hl.dsp.exec_cmd("dms ipc call lock lock"))
 
-          window-rule {
-            match app-id=r#"org\.quickshell$"#
-            open-floating true
-          }
+            -- Focus navigation
+            hl.bind(mainMod .. " + left", hl.dsp.focus({ direction = "l" }))
+            hl.bind(mainMod .. " + right", hl.dsp.focus({ direction = "r" }))
+            hl.bind(mainMod .. " + up", hl.dsp.focus({ direction = "u" }))
+            hl.bind(mainMod .. " + down", hl.dsp.focus({ direction = "d" }))
+            hl.bind(mainMod .. " + h", hl.dsp.focus({ direction = "l" }))
+            hl.bind(mainMod .. " + l", hl.dsp.focus({ direction = "r" }))
+            hl.bind(mainMod .. " + k", hl.dsp.focus({ direction = "u" }))
+            hl.bind(mainMod .. " + j", hl.dsp.focus({ direction = "d" }))
 
-          binds {
-            // Applications
-            Mod+Return { spawn "ghostty"; }
-            Mod+B { spawn "firefox"; }
-            Mod+Q { close-window; }
-            Mod+Shift+E { quit; }
+            -- Window swap
+            hl.bind(mainMod .. " + SHIFT + left", hl.dsp.window.swap({ direction = "l" }))
+            hl.bind(mainMod .. " + SHIFT + right", hl.dsp.window.swap({ direction = "r" }))
+            hl.bind(mainMod .. " + SHIFT + up", hl.dsp.window.swap({ direction = "u" }))
+            hl.bind(mainMod .. " + SHIFT + down", hl.dsp.window.swap({ direction = "d" }))
 
-            // DankMaterialShell IPC Binds
-            Mod+Space hotkey-overlay-title="Application Launcher" {
-              spawn "dms" "ipc" "call" "spotlight" "toggle";
-            }
-            Mod+V hotkey-overlay-title="Clipboard Manager" {
-              spawn "dms" "ipc" "call" "clipboard" "toggle";
-            }
-            Mod+M hotkey-overlay-title="Task Manager" {
-              spawn "dms" "ipc" "call" "processlist" "focusOrToggle";
-            }
-            Mod+Comma hotkey-overlay-title="Settings" {
-              spawn "dms" "ipc" "call" "settings" "focusOrToggle";
-            }
-            Mod+N hotkey-overlay-title="Notification Center" {
-              spawn "dms" "ipc" "call" "notifications" "toggle";
-            }
-            Mod+Y hotkey-overlay-title="Browse Wallpapers" {
-              spawn "dms" "ipc" "call" "dankdash" "wallpaper";
-            }
-            Mod+Alt+L hotkey-overlay-title="Lock Screen" {
-              spawn "dms" "ipc" "call" "lock" "lock";
-            }
+            -- Workspaces
+            for i = 1, 9 do
+              hl.bind(mainMod .. " + " .. i, hl.dsp.focus({ workspace = tostring(i) }))
+              hl.bind(mainMod .. " + SHIFT + " .. i, hl.dsp.window.move({ workspace = tostring(i) }))
+            end
 
-            // Audio Controls
-            XF86AudioRaiseVolume allow-when-locked=true {
-              spawn "dms" "ipc" "call" "audio" "increment" "3";
-            }
-            XF86AudioLowerVolume allow-when-locked=true {
-              spawn "dms" "ipc" "call" "audio" "decrement" "3";
-            }
-            XF86AudioMute allow-when-locked=true {
-              spawn "dms" "ipc" "call" "audio" "mute";
-            }
-
-            // Brightness Controls
-            XF86MonBrightnessUp allow-when-locked=true {
-              spawn "dms" "ipc" "call" "brightness" "increment" "5" "";
-            }
-            XF86MonBrightnessDown allow-when-locked=true {
-              spawn "dms" "ipc" "call" "brightness" "decrement" "5" "";
-            }
-
-            // Navigation
-            Mod+Left  { focus-column-left; }
-            Mod+Down  { focus-window-down; }
-            Mod+Up    { focus-window-up; }
-            Mod+Right { focus-column-right; }
-            Mod+H     { focus-column-left; }
-            Mod+J     { focus-window-down; }
-            Mod+K     { focus-window-up; }
-            Mod+L     { focus-column-right; }
-
-            Mod+Shift+Left  { move-column-left; }
-            Mod+Shift+Down  { move-window-down; }
-            Mod+Shift+Up    { move-window-up; }
-            Mod+Shift+Right { move-column-right; }
-            Mod+Shift+H     { move-column-left; }
-            Mod+Shift+J     { move-window-down; }
-            Mod+Shift+K     { move-window-up; }
-            Mod+Shift+L     { move-column-right; }
-
-            // Workspaces
-            Mod+1 { focus-workspace 1; }
-            Mod+2 { focus-workspace 2; }
-            Mod+3 { focus-workspace 3; }
-            Mod+4 { focus-workspace 4; }
-            Mod+5 { focus-workspace 5; }
-            Mod+6 { focus-workspace 6; }
-            Mod+7 { focus-workspace 7; }
-            Mod+8 { focus-workspace 8; }
-            Mod+9 { focus-workspace 9; }
-
-            Mod+Shift+1 { move-column-to-workspace 1; }
-            Mod+Shift+2 { move-column-to-workspace 2; }
-            Mod+Shift+3 { move-column-to-workspace 3; }
-            Mod+Shift+4 { move-column-to-workspace 4; }
-            Mod+Shift+5 { move-column-to-workspace 5; }
-            Mod+Shift+6 { move-column-to-workspace 6; }
-            Mod+Shift+7 { move-column-to-workspace 7; }
-            Mod+Shift+8 { move-column-to-workspace 8; }
-            Mod+Shift+9 { move-column-to-workspace 9; }
-          }
-        '';
+            -- Volume & Brightness
+            hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("dms ipc call audio increment 3", { locked = true, repeating = true }))
+            hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("dms ipc call audio decrement 3", { locked = true, repeating = true }))
+            hl.bind("XF86AudioMute", hl.dsp.exec_cmd("dms ipc call audio mute", { locked = true }))
+            hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("dms ipc call brightness increment 5 \"\"", { locked = true, repeating = true }))
+            hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("dms ipc call brightness decrement 5 \"\"", { locked = true, repeating = true }))
+          '';
+        };
       };
   };
 }
