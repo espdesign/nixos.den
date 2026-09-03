@@ -22,3 +22,46 @@ jobs:
         run: ./.github/scripts/flake-check.sh
       - name: Lint Check
         run: ./.github/scripts/lint.sh
+
+  list-hosts:
+    runs-on: ubuntu-latest
+    outputs:
+      hosts: ${{ steps.hosts.outputs.hosts }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Discover hosts
+        id: hosts
+        run: .github/scripts/discover-hosts.sh
+
+  build:
+    needs: [check, list-hosts]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        host: ${{ fromJson(needs.list-hosts.outputs.hosts) }}
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+
+      - uses: ./.github/actions/setup-nix
+        with:
+          cachix-auth-token: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+          github-token: '${{ secrets.GITHUB_TOKEN }}'
+
+      - uses: ./.github/actions/build-host
+        id: build
+        with:
+          host: ${{ matrix.host }}
+
+      - name: Verify build status
+        if: steps.build.outputs.status == 'failure'
+        run: |
+          echo "::error::Build failed for host ${{ matrix.host }}"
+          exit 1
