@@ -34,8 +34,9 @@
   # --- 2. VM Hardware Tweaks Aspect ---
   den.aspects.vm = {
     nixos.virtualisation.vmVariant = {
-      virtualisation.memorySize = 2048;
-      virtualisation.cores = 2;
+      virtualisation.memorySize = 4096;
+      virtualisation.cores = 4;
+      services.xserver.videoDrivers = lib.mkForce [ "modesetting" ];
     };
   };
 

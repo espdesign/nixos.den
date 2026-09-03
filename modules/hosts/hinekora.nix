@@ -16,7 +16,7 @@
       den.aspects.gui
       den.aspects.dev
       den.aspects.pob
-      den.aspects.gnome
+      den.aspects.dms
       den.aspects.scripts
       den.aspects.pipewire-sound
       den.aspects.vm

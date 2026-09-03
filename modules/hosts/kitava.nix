@@ -15,7 +15,6 @@
       den.aspects.syncthing
       den.aspects.gui
       den.aspects.dev
-      den.aspects.gnome
       den.aspects.scripts
       den.aspects.pipewire-sound
       den.aspects.vm
@@ -23,6 +22,7 @@
       den.aspects.fonts
       den.aspects.virt-manager
       den.aspects.rustdesk
+      den.aspects.dms
 
       #specific to gaming desktop
       den.aspects.gaming
