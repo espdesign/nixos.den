@@ -99,6 +99,8 @@ services:
       - QBITTORRENT__Network__Proxy\Profiles\BitTorrent=false
       - QBITTORRENT__Network__Proxy\Profiles\Misc=false
       - QBITTORRENT__Network__Proxy\Profiles\RSS=false
+      - QBITTORRENT__BitTorrent__Session\DefaultSavePath=/data/downloads/
+      - QBITTORRENT__BitTorrent__Session\TempPath=/data/downloads/incomplete/
     volumes:
       - /mnt/seagate14/data/config/qbittorrent:/config
       - /mnt/seagate14/data:/data
