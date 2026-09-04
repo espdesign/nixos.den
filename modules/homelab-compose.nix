@@ -28,7 +28,7 @@
             requires = [ "docker.service" ];
             path = [ pkgs.docker ];
             script = ''
-              docker compose -f /home/${user.userName}/docker-compose.yml pull
+              docker compose -f /home/${user.userName}/docker-compose.yml pull --parallel=false
               docker compose -f /home/${user.userName}/docker-compose.yml up -d
               docker image prune -af
             '';
