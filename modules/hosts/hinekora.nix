@@ -30,7 +30,13 @@
         imports = [
           ../_nixos/hinekora-framework.nix
           inputs.nixos-hardware.nixosModules.framework-12th-gen-intel
-        ]; # (8)
+        ];
+
+        # Framework 12th Gen power management configuration
+        # Swap TLP (from nixos-hardware) for power-profiles-daemon & UPower for GUI battery integration
+        services.tlp.enable = lib.mkForce false;
+        services.power-profiles-daemon.enable = true;
+        services.upower.enable = true;
 
         environment.systemPackages = with pkgs; [ ];
       };
