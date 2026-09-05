@@ -17,6 +17,10 @@
           environment.sessionVariables = {
             NIXOS_OZONE_WL = "1";
             ELECTRON_OZONE_PLATFORM_HINT = "auto";
+          }
+          // lib.optionalAttrs (host.hostName == "hinekora") {
+            QT_FONT_DPI = "120";
+            QT_WAYLAND_FORCE_DPI = "120";
           };
 
           # Enable DankMaterialShell
@@ -75,7 +79,7 @@
                       output = "",
                       mode = "preferred",
                       position = "auto",
-                      scale = 1.25,
+                      scale = 1,
                     })
                   ''
                 else
@@ -90,6 +94,9 @@
               }
 
               hl.config({
+                debug = {
+                  disable_scale_checks = true,
+                },
                 misc = {
                   disable_hyprland_logo = true,
                   disable_splash_rendering = true,
@@ -131,16 +138,33 @@
             account  required pam_permit.so
           '';
 
+          users.users.${user.userName}.extraGroups = [
+            "video"
+            "input"
+          ];
+
           environment.systemPackages = with pkgs; [
             alacritty
             wl-clipboard
             dms-shell
+            brightnessctl
+            playerctl
           ];
         };
 
       homeManager =
-        { pkgs, ... }:
+        { pkgs, lib, ... }:
         {
+          xresources.properties = {
+            "Xft.dpi" = if host.hostName == "hinekora" then 120 else 96;
+          };
+
+          dconf.settings = {
+            "org/gnome/desktop/interface" = {
+              text-scaling-factor = if host.hostName == "hinekora" then 1.25 else 1.0;
+            };
+          };
+
           home.pointerCursor = {
             enable = true;
             package = pkgs.bibata-cursors;
@@ -189,7 +213,7 @@
                       output = "",
                       mode = "preferred",
                       position = "auto",
-                      scale = 1.25
+                      scale = 1
                     })
                   ''
                 else
@@ -296,12 +320,26 @@
                 hl.bind(mainMod .. " + SHIFT + " .. i, hl.dsp.window.move({ workspace = tostring(i) }))
               end
 
-              -- Volume & Brightness
-              hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("dms ipc call audio increment 3", { locked = true, repeating = true }))
-              hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("dms ipc call audio decrement 3", { locked = true, repeating = true }))
-              hl.bind("XF86AudioMute", hl.dsp.exec_cmd("dms ipc call audio mute", { locked = true }))
-              hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("dms ipc call brightness increment 5 \"\"", { locked = true, repeating = true }))
-              hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("dms ipc call brightness decrement 5 \"\"", { locked = true, repeating = true }))
+              -- Volume & Audio
+              hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("dms ipc call audio increment 3"), { locked = true, repeating = true })
+              hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("dms ipc call audio decrement 3"), { locked = true, repeating = true })
+              hl.bind("XF86AudioMute", hl.dsp.exec_cmd("dms ipc call audio mute"), { locked = true })
+              hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("dms ipc call audio micmute"), { locked = true })
+
+              -- Display Brightness
+              hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("dms ipc call brightness increment 5 \"\""), { locked = true, repeating = true })
+              hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("dms ipc call brightness decrement 5 \"\""), { locked = true, repeating = true })
+
+              -- Keyboard Backlight
+              hl.bind("XF86KbdBrightnessUp", hl.dsp.exec_cmd("brightnessctl --device='*kbd_backlight*' set 10%+"), { locked = true, repeating = true })
+              hl.bind("XF86KbdBrightnessDown", hl.dsp.exec_cmd("brightnessctl --device='*kbd_backlight*' set 10%-"), { locked = true, repeating = true })
+
+              -- Media controls
+              hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("dms ipc call mpris playPause"), { locked = true })
+              hl.bind("XF86AudioPause", hl.dsp.exec_cmd("dms ipc call mpris pause"), { locked = true })
+              hl.bind("XF86AudioNext", hl.dsp.exec_cmd("dms ipc call mpris next"), { locked = true })
+              hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("dms ipc call mpris previous"), { locked = true })
+              hl.bind("XF86AudioStop", hl.dsp.exec_cmd("dms ipc call mpris stop"), { locked = true })
             '';
           };
         };
