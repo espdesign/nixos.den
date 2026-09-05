@@ -4,7 +4,7 @@
     { user, host, ... }:
     {
       nixos =
-        { pkgs, ... }:
+        { pkgs, lib, ... }:
         {
           # Enable Hyprland compositor with UWSM
           programs.hyprland = {
@@ -37,26 +37,77 @@
             enableClipboardPaste = true;
           };
 
-          # Disable GDM, enable greetd with autologin via start-hyprland
+          # Disable GDM, enable DankGreeter (DMS graphical login screen)
           services.displayManager.gdm.enable = false;
-          services.greetd = {
+          services.displayManager.defaultSession = "hyprland-uwsm";
+          services.displayManager.dms-greeter = {
             enable = true;
-            settings = {
-              default_session = {
-                command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --remember-user-session --cmd start-hyprland";
-                user = "greeter";
-              };
-              initial_session = {
-                command = "start-hyprland";
-                user = "espdesign";
-              };
-            };
+            compositor.name = "hyprland";
+            configHome = "/home/${user.userName}";
+            compositor.customConfig = ''
+              hl.env("DMS_RUN_GREETER", "1")
+
+              ${
+                if host.hostName == "kitava" then
+                  ''
+                    hl.monitor({
+                      output = "DP-1",
+                      mode = "preferred",
+                      position = "0x0",
+                      scale = 1,
+                    })
+                    hl.monitor({
+                      output = "HDMI-A-1",
+                      mode = "preferred",
+                      position = "1920x0",
+                      scale = 1,
+                    })
+                    hl.monitor({
+                      output = "",
+                      mode = "preferred",
+                      position = "auto",
+                      scale = 1,
+                    })
+                  ''
+                else if host.hostName == "hinekora" then
+                  ''
+                    hl.monitor({
+                      output = "",
+                      mode = "preferred",
+                      position = "auto",
+                      scale = 1.25,
+                    })
+                  ''
+                else
+                  ''
+                    hl.monitor({
+                      output = "",
+                      mode = "preferred",
+                      position = "auto",
+                      scale = 1,
+                    })
+                  ''
+              }
+
+              hl.config({
+                misc = {
+                  disable_hyprland_logo = true,
+                  disable_splash_rendering = true,
+                },
+                animations = {
+                  enabled = false,
+                },
+              })
+            '';
           };
 
           # Keyring, PAM & Power Management
           services.gnome.gnome-keyring.enable = true;
           services.upower.enable = true;
-          security.pam.services.greetd.enableGnomeKeyring = true;
+          security.pam.services.greetd = {
+            enableGnomeKeyring = true;
+            rules.auth.login.control = lib.mkForce "include";
+          };
           security.polkit.enable = true;
 
           # XDG Portals
@@ -102,6 +153,7 @@
           # Hyprland Lua configuration tailored for DankMaterialShell
           wayland.windowManager.hyprland = {
             enable = true;
+            systemd.enable = false;
             configType = "lua";
             extraConfig = ''
               -- Monitor configuration and scaling per host
@@ -200,6 +252,7 @@
 
               -- Startup applications
               hl.on("hyprland.start", function()
+                hl.exec_cmd("uwsm finalize")
                 hl.exec_cmd("wl-paste --type text --watch cliphist store")
               end)
 
