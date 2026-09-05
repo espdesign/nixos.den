@@ -1,6 +1,7 @@
 { den, inputs, ... }:
 let
   antigravity = inputs.antigravity-nix.packages.x86_64-linux.google-antigravity;
+  antigravity-cli = inputs.antigravity-nix.packages.x86_64-linux.google-antigravity-cli;
 in
 {
   den.aspects.dev =
@@ -31,6 +32,7 @@ in
             dockerfile-language-server
             sentry-cli
             antigravity
+            antigravity-cli
           ];
           programs.vscodium = {
             enable = true;
