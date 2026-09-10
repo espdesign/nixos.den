@@ -45,11 +45,9 @@
                 # ls $(nix-build '<nixpkgs>' -A firefox)/share/applications/
                 favorite-apps = [
                   "org.gnome.Nautilus.desktop"
-                  "firefox.desktop"
                   "com.mitchellh.ghostty.desktop"
                   "codium.desktop"
                   "steam.desktop"
-                  "vesktop.desktop"
                 ];
               };
 
@@ -76,12 +74,14 @@
             enable = true;
             settings = {
               "org/gnome/shell" = {
+                disable-user-extensions = false;
+                # Enable the app indicator extension (tray icons)
+                enabled-extensions = [ "appindicatorsupport@rgcjonas.gmail.com" ];
+
                 favorite-apps = [
                   "org.gnome.Nautilus.desktop"
                   "google-chrome.desktop"
-                  "firefox.desktop"
                   "steam.desktop"
-                  "vesktop.desktop"
                 ];
               };
 
