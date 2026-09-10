@@ -8,10 +8,6 @@ in
     { user, host, ... }:
     {
       includes = [
-        den.aspects.cli
-        den.aspects.fonts
-        den.aspects.docker
-        den.aspects.scripts
       ];
 
       nixos =

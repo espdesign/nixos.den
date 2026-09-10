@@ -29,38 +29,68 @@
         ];
       };
 
-    homeManager = {
-      # Configure GNOME settings for Home Manager users.
-      dconf = {
-        enable = true;
-        settings = {
-          "org/gnome/shell" = {
-            disable-user-extensions = false;
-            # Enable the app indicator extension (tray icons)
-            enabled-extensions = [ "appindicatorsupport@rgcjonas.gmail.com" ];
+    provides = {
+      # espdesign's per-user GNOME customization
+      espdesign = {
+        homeManager = {
+          dconf = {
+            enable = true;
+            settings = {
+              "org/gnome/shell" = {
+                disable-user-extensions = false;
+                # Enable the app indicator extension (tray icons)
+                enabled-extensions = [ "appindicatorsupport@rgcjonas.gmail.com" ];
 
-            # To find app desktop names
-            # ls $(nix-build '<nixpkgs>' -A firefox)/share/applications/
-            favorite-apps = [
-              "org.gnome.Nautilus.desktop"
-              "firefox.desktop"
-              "com.mitchellh.ghostty.desktop"
-              "codium.desktop"
-              "steam.desktop"
-              "vesktop.desktop"
-            ];
+                # To find app desktop names
+                # ls $(nix-build '<nixpkgs>' -A firefox)/share/applications/
+                favorite-apps = [
+                  "org.gnome.Nautilus.desktop"
+                  "firefox.desktop"
+                  "com.mitchellh.ghostty.desktop"
+                  "codium.desktop"
+                  "steam.desktop"
+                  "vesktop.desktop"
+                ];
+              };
+
+              "org/gnome/desktop/interface" = {
+                show-battery-percentage = true;
+                clock-format = "12h";
+                color-scheme = "prefer-dark";
+              };
+
+              # Set desktop background for dark and light mode directly from the Nix store
+              "org/gnome/desktop/background" = {
+                picture-uri = "file://${./assets/wallpaper-molly.jpg}";
+                picture-uri-dark = "file://${./assets/wallpaper-molly.jpg}";
+              };
+            };
           };
+        };
+      };
 
-          "org/gnome/desktop/interface" = {
-            show-battery-percentage = true;
-            clock-format = "12h";
-            color-scheme = "prefer-dark";
-          };
+      # jake's per-user GNOME customization
+      jake = {
+        homeManager = {
+          dconf = {
+            enable = true;
+            settings = {
+              "org/gnome/shell" = {
+                favorite-apps = [
+                  "org.gnome.Nautilus.desktop"
+                  "google-chrome.desktop"
+                  "firefox.desktop"
+                  "steam.desktop"
+                  "vesktop.desktop"
+                ];
+              };
 
-          # Set desktop background for dark and light mode directly from the Nix store
-          "org/gnome/desktop/background" = {
-            picture-uri = "file://${./assets/wallpaper-molly.jpg}";
-            picture-uri-dark = "file://${./assets/wallpaper-molly.jpg}";
+              "org/gnome/desktop/interface" = {
+                show-battery-percentage = true;
+                clock-format = "12h";
+                color-scheme = "prefer-dark";
+              };
+            };
           };
         };
       };

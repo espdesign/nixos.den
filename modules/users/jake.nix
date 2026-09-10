@@ -7,6 +7,7 @@
     includes = [
       den.provides.define-user
       (den.provides.user-shell "zsh")
+      den.aspects.gnome.provides.jake
     ];
     nixos =
       { ... }:
@@ -19,8 +20,8 @@
     homeManager =
       { pkgs, ... }:
       {
-        home.packages = [
-          pkgs.google-chrome
+        home.packages = with pkgs; [
+          google-chrome
         ];
       };
   };
