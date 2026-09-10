@@ -104,13 +104,6 @@ in
 
             };
           };
-          #enable gh with credential helper
-          programs.gh = {
-            enable = true;
-            gitCredentialHelper = {
-              enable = true;
-            };
-          };
         };
     };
 }

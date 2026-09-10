@@ -132,6 +132,14 @@
             # Prevent direnv shoowing all env variables on load
             config.global.hide_env_diff = true;
           };
+
+          # 7. GitHub CLI with git credential helper
+          programs.gh = {
+            enable = true;
+            gitCredentialHelper = {
+              enable = true;
+            };
+          };
         };
     };
 }
