@@ -18,7 +18,6 @@
       den.aspects.cli
       den.aspects.docker
       den.aspects.dev
-      den.aspects.scripts
       den.aspects.pipewire-sound
       den.aspects.vm
       den.aspects.cups-print
