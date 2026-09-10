@@ -31,6 +31,11 @@
       {
         imports = [ ../_nixos/abberath-omen.nix ];
         environment.systemPackages = with pkgs; [ ];
+
+        fileSystems."/mnt/data" = {
+          device = "/dev/disk/by-id/ata-WDC_WD10EZEX-60WN4A2_WD-WCC6Y3UFVJ0Y-part1";
+          fsType = "ext4";
+        };
       };
   };
 }
