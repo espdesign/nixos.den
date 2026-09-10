@@ -93,7 +93,6 @@
               echo "=========================================="
               echo ""
 
-              "${notifyDesktop}" "System Update Started" "Fetching updates and rebuilding system..." "normal" "system-software-update"
               echo "Fetching updates and rebuilding system..."
 
               PREV_SYS="$(readlink -f /run/current-system 2>/dev/null || true)"
@@ -116,12 +115,9 @@
                 echo " System update completed successfully!"
                 echo "=========================================="
 
-                if [ "$PREV_SYS" = "$NEW_SYS" ]; then
-                  "${notifyDesktop}" "System Up to Date" "No new changes found. System is already up to date." "low" "emblem-default"
-                elif [ -n "$BOOTED_KERNEL" ] && [ -n "$NEW_KERNEL" ] && [ "$BOOTED_KERNEL" != "$NEW_KERNEL" ]; then
+                # Only notify if action is needed (kernel/driver update requiring restart)
+                if [ "$PREV_SYS" != "$NEW_SYS" ] && [ -n "$BOOTED_KERNEL" ] && [ -n "$NEW_KERNEL" ] && [ "$BOOTED_KERNEL" != "$NEW_KERNEL" ]; then
                   "${notifyDesktop}" "Update Finished — Restart Needed" "A new kernel/driver update was installed. Please restart your computer to apply." "critical" "system-reboot"
-                else
-                  "${notifyDesktop}" "Update Complete" "System updated successfully! All changes are active — no restart needed." "normal" "emblem-default"
                 fi
               else
                 echo "=========================================="
@@ -173,11 +169,10 @@
             operation = "boot";
           };
 
-          # Desktop alerts for the background service
+          # Desktop alerts for the background service (only when action is needed)
           systemd.services.nixos-upgrade = {
             preStart = ''
               readlink -f /nix/var/nix/profiles/system > /run/nixos-upgrade-prev-system || true
-              ${notifyDesktop} "System Update Started" "Downloading and preparing latest updates in the background..." "normal" "system-software-update"
             '';
             postStart = ''
               PREV_SYS="$(cat /run/nixos-upgrade-prev-system 2>/dev/null || true)"
@@ -185,7 +180,7 @@
               rm -f /run/nixos-upgrade-prev-system
 
               if [ -n "$PREV_SYS" ] && [ -n "$NEW_SYS" ] && [ "$PREV_SYS" != "$NEW_SYS" ]; then
-                # Staged for next boot -> notify that reboot is ready
+                # Staged for next boot -> notify only because restart is required to apply
                 ${notifyDesktop} "Update Finished — Restart Needed" "System updates are ready. Please restart your computer when convenient to apply them." "normal" "software-update-available"
               fi
             '';
