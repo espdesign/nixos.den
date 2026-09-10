@@ -9,6 +9,13 @@
       den.provides.primary-user
       (den.provides.user-shell "zsh")
       den.aspects.autologin-vm
+      den.aspects.gnome.provides.espdesign
+      (den.provides.unfree [
+        "obsidian"
+        "signal-desktop"
+        "slack"
+        "spotify"
+      ])
     ];
     nixos =
       { ... }:
@@ -41,6 +48,12 @@
 
         home.packages = with pkgs; [
           ghostty.terminfo
+          obsidian
+          signal-desktop
+          slack
+          spotify
+          qbittorrent
+          element-desktop
         ];
         programs.git = {
           enable = true;

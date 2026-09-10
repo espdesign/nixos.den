@@ -1,18 +1,8 @@
 { den, ... }:
 {
-  den.aspects.gui =
+  den.aspects.gui-core =
     { user, ... }:
     {
-      includes = [
-        (den.provides.unfree [
-          "google-chrome"
-          "obsidian"
-          "signal-desktop"
-          "slack"
-          "spotify"
-        ])
-      ];
-
       nixos = {
         networking.networkmanager.enable = true;
       };
@@ -25,18 +15,12 @@
             dconf-editor
             libreoffice
             mpv
-            qbittorrent
             # stirling-pdf
             # thunderbird
             typst
             vesktop
             # google-chrome
-            obsidian
-            signal-desktop
-            slack
-            spotify
             kdePackages.kolourpaint
-            element-desktop
           ];
           programs.ghostty = {
             enable = true;

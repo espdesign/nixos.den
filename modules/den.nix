@@ -24,4 +24,8 @@
   den.hosts.x86_64-linux.valako = {
     users.espdesign = { };
   }; # cli test
+  den.hosts.x86_64-linux.abberath = {
+    users.espdesign = { };
+    users.jake = { };
+  }; # omen desktop
 }
