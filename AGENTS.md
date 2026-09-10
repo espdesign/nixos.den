@@ -8,15 +8,17 @@
 
 ### Nix Flakes & Untracked Files
 
-Stage new files with `git add <file>` before running `nix flake check`, `nixos-rebuild`, or `nix run`. Nix flakes ignore untracked files, causing "attribute missing" errors.
+Stage new files with `git add <file>` before `nix flake check`, `nixos-rebuild`, or `nix run`. Flakes ignore untracked files.
 
 ### Aspect Functions & `builtins.functionArgs`
 
-Den uses `builtins.functionArgs` to detect whether an aspect function is parametric (receives context) or static. A function `{ ... }:` returns `{}` from `functionArgs`, causing Den to treat it as static and **never call it with context**.
+Destructure named context args you need (e.g. `{ user, ... }:`). Never `{ ... }:` — `functionArgs` returns `{}` for that, so Den can't bind context vars.
 
-Use explicit destructuring to receive context:
+### Aspect Granularity & Composition
 
-- **CORRECT:** `{ user, host, ... }:` or `{ user, ... }:` → `functionArgs` shows expected args → Den calls it with context
-- **WRONG:** `{ ... }:` → `functionArgs` returns `{}` → Den skips it silently
+Compose aspects per host/user; don't bundle optional features into shared aspects.
 
-This applies to aspects listed in `provides.to-users.includes` and likely other pipeline contexts.
+- No optional features in base aspects — include them explicitly per host.
+- `dev` = IDE/editor tooling only. `cli`/`fonts`/`docker`/`scripts` are separate aspects.
+- `gui-core` = must-have desktop apps. Preference apps (obsidian, slack, etc.) go in `modules/users/<user>.nix`.
+- `den.aspects.gnome` is system-only. Per-user dconf lives in `den.aspects.gnome.provides.<user>`.
