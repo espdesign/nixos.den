@@ -54,7 +54,38 @@
               pkgs.libnotify
             ];
             text = ''
-              FLAKE_TARGET="${flakeUri}"
+              LOCAL_REPO="$HOME/git/nixos.den"
+              REFRESH_FLAG="--refresh"
+
+              if [ -d "$LOCAL_REPO/.git" ]; then
+                echo "Found local repository at $LOCAL_REPO"
+
+                # 1. Stop if mid-rebase or mid-merge
+                if [ -d "$LOCAL_REPO/.git/rebase-merge" ] || [ -d "$LOCAL_REPO/.git/rebase-apply" ] || [ -f "$LOCAL_REPO/.git/MERGE_HEAD" ]; then
+                  echo "Error: $LOCAL_REPO is in the middle of a git rebase/merge."
+                  echo "Please resolve or abort it ('git rebase --abort') before running update-system."
+                  "${notifyDesktop}" "Update Blocked" "Local git repository has unresolved rebase conflicts." "critical" "dialog-error"
+                  exit 1
+                fi
+
+                # 2. If uncommitted changes exist, skip pull to protect local edits
+                if ! git -C "$LOCAL_REPO" diff-index --quiet HEAD -- 2>/dev/null; then
+                  echo "Notice: Uncommitted local changes detected in $LOCAL_REPO."
+                  echo "Skipping git pull to protect local work. Rebuilding from working directory..."
+                else
+                  echo "Pulling latest changes from git..."
+                  # 3. Fast-forward only; never create conflict markers or start interactive rebase
+                  if ! git -C "$LOCAL_REPO" pull --ff-only 2>/dev/null; then
+                    echo "Warning: Local branch has diverged from origin/main. Cannot fast-forward."
+                    echo "Skipping pull to avoid rebase conflicts. Rebuilding local tree..."
+                  fi
+                fi
+
+                FLAKE_TARGET="$LOCAL_REPO#${host.hostName}"
+                REFRESH_FLAG=""
+              else
+                FLAKE_TARGET="${flakeUri}"
+              fi
 
               echo "=========================================="
               echo " NixOS System Update"
@@ -62,14 +93,18 @@
               echo "=========================================="
               echo ""
 
-              "${notifyDesktop}" "System Update Started" "Fetching updates from GitHub and rebuilding system..." "normal" "system-software-update"
-              echo "Fetching updates from GitHub and rebuilding system..."
+              "${notifyDesktop}" "System Update Started" "Fetching updates and rebuilding system..." "normal" "system-software-update"
+              echo "Fetching updates and rebuilding system..."
 
               PREV_SYS="$(readlink -f /run/current-system 2>/dev/null || true)"
               BOOTED_KERNEL="$(readlink -f /run/booted-system/kernel 2>/dev/null || true)"
 
               set +e
-              sudo nixos-rebuild switch --refresh --flake "$FLAKE_TARGET" "$@"
+              if [ -n "$REFRESH_FLAG" ]; then
+                sudo nixos-rebuild switch "$REFRESH_FLAG" --flake "$FLAKE_TARGET" "$@"
+              else
+                sudo nixos-rebuild switch --flake "$FLAKE_TARGET" "$@"
+              fi
               STATUS=$?
 
               NEW_SYS="$(readlink -f /run/current-system 2>/dev/null || true)"

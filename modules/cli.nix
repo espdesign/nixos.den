@@ -64,7 +64,6 @@
               code = "codium";
               nix-edit = "code ~/git/nixos.den";
               nix-apply = "sudo nixos-rebuild switch --flake ~/git/nixos.den#${host.hostName}";
-              nix-update = "if [ -d ~/git/nixos.den ]; then git -C ~/git/nixos.den pull && nix-apply; else update-system; fi";
 
             };
 
