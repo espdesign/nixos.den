@@ -45,9 +45,11 @@
                 # ls $(nix-build '<nixpkgs>' -A firefox)/share/applications/
                 favorite-apps = [
                   "org.gnome.Nautilus.desktop"
+                  "firefox.desktop"
                   "com.mitchellh.ghostty.desktop"
                   "codium.desktop"
                   "steam.desktop"
+                  "vesktop.desktop"
                 ];
               };
 
