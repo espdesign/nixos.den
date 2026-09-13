@@ -20,6 +20,8 @@
 
           systemd.tmpfiles.rules = [
             "d /mnt/seagate14/data/config/qbit-manage 0755 ${user.userName} users -"
+            "d /mnt/seagate14/data/downloads 0775 ${user.userName} users -"
+            "d /mnt/seagate14/data/downloads/incomplete 0775 ${user.userName} users -"
           ];
 
           systemd.services.homelab-compose-update = {
