@@ -8,7 +8,7 @@ commands:
   rem_unregistered: false
   tag_tracker_error: false
   rem_orphaned: false
-  tag_nohardlinks: false
+  tag_nohardlinks: true
   skip_cleanup: false
   dry_run: false
 qbt:
@@ -24,6 +24,10 @@ directory:
 cat:
   Uncategorized: /data/*
 
+nohardlinks:
+  tv-sonarr:
+  radarr:
+
 tracker:
   czteam.me:
     tag: czteam
@@ -33,17 +37,23 @@ tracker:
   open.demonii.com:
     tag: open.demonii.com
 share_limits:
-  strict_seeding:
+  noHL:
     priority: 1
+    include_all_tags:
+    - noHL
+    cleanup: false
+  strict_seeding:
+    priority: 2
     include_all_tags:
     - czteam
     max_seeding_time: 14d
     max_ratio: -1
     cleanup: true
   default:
-    priority: 2
-    min_seeding_time: 2d
-    max_ratio: 1.0
+    priority: 3
+    min_seeding_time: 1h
+    max_ratio: 0.25
+    max_seeding_time: 2d
     cleanup: true
 settings:
   force_auto_tmm: false
