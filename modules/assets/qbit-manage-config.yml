@@ -1,0 +1,92 @@
+commands:
+  share_limits: true
+  tag_update: true
+  skip_qb_version_check: true
+
+  recheck: false
+  cat_update: false
+  rem_unregistered: false
+  tag_tracker_error: false
+  rem_orphaned: false
+  tag_nohardlinks: false
+  skip_cleanup: false
+  dry_run: false
+qbt:
+  host: http://localhost:8080
+  user: !ENV QBT_USER
+  pass: !ENV QBT_PASS
+
+directory:
+  root_dir: /data
+
+  recycle_bin: /data/.RecycleBin
+  torrents_dir:
+cat:
+  Uncategorized: /data/*
+
+tracker:
+  czteam.me:
+    tag: czteam
+
+  tracker.opentrackr.org:
+    tag: tracker.opentrackr.org
+  open.demonii.com:
+    tag: open.demonii.com
+share_limits:
+  strict_seeding:
+    priority: 1
+    include_all_tags:
+    - czteam
+    max_seeding_time: 14d
+    max_ratio: -1
+    cleanup: true
+  default:
+    priority: 2
+    min_seeding_time: 2d
+    max_ratio: 1.0
+    cleanup: true
+settings:
+  force_auto_tmm: false
+  tracker_error_tag: issue
+  nohardlinks_tag: noHL
+  stalled_tag: stalledDL
+  private_tag:
+  share_limits_tag: ~share_limit
+  share_limits_min_seeding_time_tag: MinSeedTimeNotReached
+  share_limits_min_num_seeds_tag: MinSeedsNotMet
+  share_limits_last_active_tag: LastActiveLimitNotReached
+  cat_filter_completed: true
+  share_limits_filter_completed: true
+  tag_nohardlinks_filter_completed: true
+  rem_unregistered_filter_completed: false
+  cat_update_all: true
+  force_auto_tmm_ignore_tags: []
+  disable_qbt_default_share_limits: true
+  tag_stalled_torrents: true
+  rem_unregistered_ignore_list: []
+  rem_unregistered_grace_minutes: 10
+  rem_unregistered_max_torrents: 10
+webhooks:
+  error:
+  run_start:
+  run_end:
+  function:
+    recheck:
+    cat_update:
+    tag_update:
+    rem_unregistered:
+    tag_tracker_error:
+    rem_orphaned:
+    tag_nohardlinks:
+    share_limits:
+    cleanup_dirs:
+recyclebin:
+  enabled: true
+  empty_after_x_days: 7
+  save_torrents: false
+  split_by_category: false
+orphaned:
+  empty_after_x_days:
+  exclude_patterns:
+  max_orphaned_files_to_delete: 50
+  min_file_age_minutes: 0

@@ -5,6 +5,10 @@
     {
       nixos =
         { pkgs, ... }:
+        let
+          # Declarative qbit-manage config (share limits / recycle bin rules).
+          qbManageConfig = pkgs.writeText "qbit-manage-config.yml" (builtins.readFile ./assets/qbit-manage-config.yml);
+        in
         {
           hardware.graphics.enable = true;
           boot.kernelModules = [ "i915" ];
@@ -22,6 +26,7 @@
             "d /mnt/seagate14/data/config/qbit-manage 0755 ${user.userName} users -"
             "d /mnt/seagate14/data/downloads 0775 ${user.userName} users -"
             "d /mnt/seagate14/data/downloads/incomplete 0775 ${user.userName} users -"
+            "L+ /mnt/seagate14/data/config/qbit-manage/config.yml - - - - ${qbManageConfig}"
           ];
 
           systemd.services.homelab-compose-update = {
