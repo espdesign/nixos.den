@@ -7,7 +7,9 @@
         { pkgs, ... }:
         let
           # Declarative qbit-manage config (share limits / recycle bin rules).
-          qbManageConfig = pkgs.writeText "qbit-manage-config.yml" (builtins.readFile ./assets/qbit-manage-config.yml);
+          qbManageConfig = pkgs.writeText "qbit-manage-config.yml" (
+            builtins.readFile ./assets/qbit-manage-config.yml
+          );
         in
         {
           hardware.graphics.enable = true;
