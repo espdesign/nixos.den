@@ -28,8 +28,26 @@
             "d /mnt/seagate14/data/config/qbit-manage 0755 ${user.userName} users -"
             "d /mnt/seagate14/data/downloads 0775 ${user.userName} users -"
             "d /mnt/seagate14/data/downloads/incomplete 0775 ${user.userName} users -"
-            "L+ /mnt/seagate14/data/config/qbit-manage/config.yml - - - - ${qbManageConfig}"
           ];
+
+          # qbit-manage reads /config/config.yml from inside the container, so a symlink
+          # into /nix/store dangles there (/nix is not mounted in the container).
+          # Install a real file instead, before docker starts any container.
+          systemd.services.qbit-manage-config = {
+            description = "Install declarative qbit-manage config";
+            before = [ "docker.service" ];
+            wantedBy = [ "docker.service" ];
+            path = [ pkgs.coreutils ];
+            script = ''
+              install -m 0644 -o ${user.userName} -g users \
+                ${qbManageConfig} \
+                /mnt/seagate14/data/config/qbit-manage/config.yml
+            '';
+            serviceConfig = {
+              Type = "oneshot";
+              RemainAfterExit = true;
+            };
+          };
 
           systemd.services.homelab-compose-update = {
             description = "Update Homelab Containers";
@@ -37,7 +55,10 @@
             requires = [ "docker.service" ];
             path = [ pkgs.docker ];
             script = ''
-              docker compose --parallel=1 -f /home/${user.userName}/docker-compose.yml pull
+              # A registry 429 must not cancel this run: pull what we can, then always
+              # deploy and prune. Otherwise one failing image silently freezes the stack.
+              docker compose --parallel=1 -f /home/${user.userName}/docker-compose.yml pull --ignore-pull-failures ||
+                echo "WARNING: some images failed to pull; applying the rest"
               docker compose -f /home/${user.userName}/docker-compose.yml up -d
               docker image prune -af
             '';
