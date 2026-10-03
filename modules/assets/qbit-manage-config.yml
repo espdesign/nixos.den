@@ -37,24 +37,31 @@ tracker:
   open.demonii.com:
     tag: open.demonii.com
 share_limits:
-  noHL:
-    priority: 1
-    include_all_tags:
-    - noHL
-    cleanup: false
+  # Private trackers: seed hard, forever-ratio. Public trackers fall through to
+  # default, which stops them at the first limit reached. A group with no
+  # max_ratio/max_seeding_time means "no limits at all" (qbit_manage inherits
+  # qBittorrent's unlimited globals), so never add an unconditional exemption
+  # group here or every torrent lands in it and seeds forever.
+  # cleanup + Default = qbit_manage-managed removal via the RecycleBin (7d),
+  # not qBittorrent's Remove/RemoveWithContent which would bypass it.
   strict_seeding:
-    priority: 2
+    priority: 1
     include_all_tags:
     - czteam
     max_seeding_time: 14d
     max_ratio: -1
     cleanup: true
+    share_limit_action: Default
   default:
-    priority: 3
+    priority: 2
+    # Guarantees the files stay put for an hour after completion so Sonarr/Radarr
+    # can import before cleanup recycles them. Below this threshold qbit_manage
+    # clears the limits and resumes the torrent.
     min_seeding_time: 1h
-    max_ratio: 0.25
-    max_seeding_time: 2d
+    max_ratio: 0.1
+    max_seeding_time: 1d
     cleanup: true
+    share_limit_action: Default
 settings:
   force_auto_tmm: false
   tracker_error_tag: issue
