@@ -3,20 +3,31 @@
   ...
 }:
 {
-  den.aspects.espdesign = {
-    includes = [
-      den.provides.define-user
-      den.provides.primary-user
-      (den.provides.user-shell "zsh")
-      den.aspects.autologin-vm
-      den.aspects.gnome.provides.espdesign
-      (den.provides.unfree [
-        "obsidian"
-        "signal-desktop"
-        "slack"
-        "spotify"
-      ])
-    ];
+  den.aspects.espdesign =
+    { host ? null, ... }:
+    let
+      isDesktop = host == null || (host ? hostName && host.hostName != "valako");
+    in
+    {
+      includes = [
+        den.provides.define-user
+        den.provides.primary-user
+        (den.provides.user-shell "zsh")
+        den.aspects.autologin-vm
+      ]
+      ++ (
+        if isDesktop then
+          [
+            (den.provides.unfree [
+              "obsidian"
+              "signal-desktop"
+              "slack"
+              "spotify"
+            ])
+          ]
+        else
+          [ ]
+      );
     nixos =
       { ... }:
       {
@@ -46,15 +57,24 @@
           };
         };
 
-        home.packages = with pkgs; [
-          ghostty.terminfo
-          obsidian
-          signal-desktop
-          slack
-          spotify
-          qbittorrent
-          element-desktop
-        ];
+        home.packages =
+          with pkgs;
+          [
+            ghostty.terminfo
+          ]
+          ++ (
+            if isDesktop then
+              [
+                obsidian
+                signal-desktop
+                slack
+                spotify
+                qbittorrent
+                element-desktop
+              ]
+            else
+              [ ]
+          );
         programs.git = {
           enable = true;
           signing.format = null;

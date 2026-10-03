@@ -13,7 +13,16 @@
             "10.0.0.0/8"
             "172.16.0.0/12"
           ]; # Whitelist your LAN
+          jails.sshd.settings = {
+            enabled = true;
+            port = "ssh";
+            filter = "sshd";
+            maxretry = 3;
+          };
         };
+
+        security.sudo.execWheelOnly = true;
+        security.auditd.enable = true;
 
         boot.kernel.sysctl = {
           # TCP SYN Cookies — protects against SYN flood attacks

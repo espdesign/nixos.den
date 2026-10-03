@@ -7,7 +7,6 @@
     includes = [
       den.provides.define-user
       (den.provides.user-shell "zsh")
-      den.aspects.gnome.provides.jake
     ];
     nixos =
       { ... }:

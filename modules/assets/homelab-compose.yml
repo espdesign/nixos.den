@@ -8,10 +8,10 @@ services:
     devices:
       - /dev/net/tun:/dev/net/tun
     ports:
-      - 8989:8989 # sonarr
-      - 7878:7878 # radarr
-      - 9696:9696 # prowlarr
-      - 8080:8080 # qbittorrent webui
+      - 127.0.0.1:8989:8989 # sonarr
+      - 127.0.0.1:7878:7878 # radarr
+      - 127.0.0.1:9696:9696 # prowlarr
+      - 127.0.0.1:8080:8080 # qbittorrent webui
       - 51735:51735 # qbittorrent
       - 51735:51735/udp
     volumes:
@@ -93,6 +93,11 @@ services:
       - PGID=1000
       - TZ=America/New_York
       - WEBUI_PORT=8080
+      - QBITTORRENT__Preferences__WebUI\HostHeaderValidation=false
+      - QBITTORRENT__Preferences__WebUI\CSRFProtection=false
+      - QBITTORRENT__Preferences__WebUI\ReverseProxySupportEnabled=true
+      - QBITTORRENT__Preferences__WebUI\TrustedReverseProxiesList=127.0.0.1/32, 172.16.0.0/12, 192.168.0.0/16
+      - QBITTORRENT__Preferences__WebUI\ServerDomains=qbit.evansp.com
       - QBITTORRENT__Advanced__NetworkInterface=tun0
       - QBITTORRENT__Advanced__OptionalIPAddress=0.0.0.0
       - QBITTORRENT__BitTorrent__Session\Interface=tun0
@@ -128,7 +133,7 @@ services:
     environment:
       - TZ=America/New_York
     ports:
-      - 5055:5055
+      - 127.0.0.1:5055:5055
     volumes:
       - /mnt/seagate14/data/config/seerr:/app/config
     restart: unless-stopped
