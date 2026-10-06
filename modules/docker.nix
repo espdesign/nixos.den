@@ -1,7 +1,11 @@
 { ... }:
 {
   den.aspects.docker =
-    { user, host ? null, ... }:
+    {
+      user,
+      host ? null,
+      ...
+    }:
     let
       isServer = host ? hostName && host.hostName == "valako";
     in
