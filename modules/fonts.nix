@@ -6,7 +6,6 @@
       {
         fonts.packages = with pkgs; [
           fira-code
-          font-manager
           font-awesome_5
           noto-fonts
           nerd-fonts.jetbrains-mono
