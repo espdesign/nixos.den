@@ -2,6 +2,7 @@
 let
   antigravity = inputs.antigravity-nix.packages.x86_64-linux.google-antigravity;
   antigravity-cli = inputs.antigravity-nix.packages.x86_64-linux.google-antigravity-cli;
+  openspec = inputs.openspec.packages.x86_64-linux.default;
 in
 {
   den.aspects.dev =
@@ -29,6 +30,7 @@ in
             sentry-cli
             antigravity
             antigravity-cli
+            openspec
           ];
           programs.vscodium = {
             enable = true;
