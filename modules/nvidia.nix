@@ -11,6 +11,13 @@
     nixos =
       { config, ... }:
       {
+        # --- Kernel & Module Options for ReBAR ---
+        boot.kernelParams = [ "nvidia.NVreg_EnableResizableBar=1" ];
+
+        boot.extraModprobeConfig = ''
+          options nvidia NVreg_EnableResizableBar=1
+        '';
+
         # --- Nvidia configuration ---
         hardware.graphics = {
           enable = true;
