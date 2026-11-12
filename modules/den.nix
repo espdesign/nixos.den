@@ -15,6 +15,9 @@
   # and user aspects to forward config to homeManager classes.
   den.schema.user.includes = [ den.batteries.mutual-provider ];
 
+  # Explicitly opt hosts in to receiving NixOS content from their user aspects.
+  den.schema.host.includes = [ den.batteries.user-aspects ];
+
   den.hosts.x86_64-linux.hinekora = {
     users.espdesign = { };
   }; # framework
